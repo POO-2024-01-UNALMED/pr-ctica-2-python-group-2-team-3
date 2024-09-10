@@ -68,9 +68,9 @@ class FieldFrame(tk.Frame):
         style.configure("TCombobox", font=("Candara Light", 18))
 
         # Creación del Combobox en dos columnas
-        widget = ttk.Combobox(self, textvariable=self.selected_value, values=self.valores, state="readonly" if self.habilitado[0] else "disabled", style="TCombobox")
-        widget.grid(row=1, column=0, columnspan=2, padx=5, pady=5, sticky="ew")
-        self.widgets["seleccion"] = widget
+        self.combobox = ttk.Combobox(self, textvariable=self.selected_value, values=self.valores, state="readonly" if self.habilitado[0] else "disabled", style="TCombobox")
+        self.combobox.grid(row=1, column=0, columnspan=2, padx=5, pady=5, sticky="ew")
+        self.widgets["seleccion"] = self.combobox
 
     def crearMultipleOpcionFrame(self, titulo):
         """
@@ -206,6 +206,8 @@ class FieldFrame(tk.Frame):
         """
         if self.tipo_formulario == 0:
             self.selected_value.set(None)
+            self.combobox.set("")
+            self.focus()
         elif self.tipo_formulario in [1, 2]:
             self.seleccionados = []
             self.combobox.set("")
