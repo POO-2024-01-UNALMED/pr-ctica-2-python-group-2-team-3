@@ -31,7 +31,8 @@ class VentanaPrincipalDeUsuario(tk.Tk):
         """
         super().__init__()
         self.title("Ventana principal de usuario")
-        self.iconbitmap("archivos\\perroLogo.ico")
+        ruta_icono = os.path.join(os.path.dirname(__file__), 'archivos', 'perroLogo.ico')
+        self.iconbitmap(ruta_icono)
         self.config(bg="white smoke")
         self.resizable(width=False, height=True)
 
@@ -61,7 +62,8 @@ class VentanaPrincipalDeUsuario(tk.Tk):
         self.titulo_frame.grid(row=0, column=0, sticky="nsew", padx=10)
 
         # Titulo
-        self.logo_image = tk.PhotoImage(file="archivos\\logoMontaña.png")  # Añadir la imagen al título_frame
+        ruta_logoMontaña = os.path.join(os.path.dirname(__file__), 'archivos', 'logoMontaña.png')
+        self.logo_image = tk.PhotoImage(file=ruta_logoMontaña)  # Añadir la imagen al título_frame
         self.logo_label = tk.Label(self.titulo_frame, image=self.logo_image, bg="white smoke", padx=5)
         self.logo_label.grid(row=0, column=0, padx=5, sticky="w")
 
@@ -94,8 +96,9 @@ class VentanaPrincipalDeUsuario(tk.Tk):
             for widget in ['interaccion_label', 'interaccion_texto', 'procesosYConsultas_frame', 'resultados_frame', 'resultados_texto']:
                 if hasattr(self, widget) and getattr(self, widget).winfo_exists():
                     getattr(self, widget).destroy()
-                    
-            self.imagen_fondo = tk.PhotoImage(file="archivos\\fondo.png")  # Cargar la imagen de fondo
+            
+            ruta_imagen_fondo = os.path.join(os.path.dirname(__file__), 'archivos', 'fondo.png')      
+            self.imagen_fondo = tk.PhotoImage(file=ruta_imagen_fondo)  # Cargar la imagen de fondo
             self.canvas = tk.Canvas(self.interaccion_usuario_frame, width=800, height=459, bg="white", highlightthickness=0)
             self.canvas.grid(row=0, column=0, sticky="nsew")  # Hacer que el canvas se expanda
             self.canvas.update_idletasks()  # Ajustar el tamaño del canvas según la ventana
@@ -192,7 +195,8 @@ class VentanaPrincipalDeUsuario(tk.Tk):
         """
         Muestra la información de la aplicación desde un archivo de texto en un cuadro de mensaje.
         """
-        with open("archivos\\informacion_aplicacion.txt", "r", encoding="utf-8") as file:
+        ruta_texto = os.path.join(os.path.dirname(__file__), 'archivos', 'informacion_aplicacion.txt')
+        with open(ruta_texto, "r", encoding="utf-8") as file:
             texto_informacion = file.read()
         messagebox.showinfo("Información de la aplicación", texto_informacion)
 
@@ -209,7 +213,8 @@ class VentanaPrincipalDeUsuario(tk.Tk):
         """
         Muestra el manual de usuario de la aplicación en un visor de PDF.
         """
-        PdfViewer(self, "archivos\\manualDeUsuario.pdf", "Manual de usuario de la aplicación")
+        ruta_texto = os.path.join(os.path.dirname(__file__), 'archivos', 'manualDeUsuario.pdf')
+        PdfViewer(self, ruta_texto, "Manual de usuario de la aplicación")
 
 # Ejecución de la aplicación
 if __name__ == "__main__":
