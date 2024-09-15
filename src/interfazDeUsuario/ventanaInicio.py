@@ -2,6 +2,7 @@ import sys
 import os
 import tkinter as tk
 from tkinter import messagebox
+from PIL import Image, ImageTk
 
 #importar la ventana principal
 #from ventanaPrincipalDeUsuario import VentanaPrincipalDeUsuario
@@ -47,13 +48,14 @@ class VentanaInicio(tk.Tk):
 
     ruta_fotos_sistema = [ruta_sistema1, ruta_sistema2, ruta_sistema3, ruta_sistema4, ruta_sistema5]
 
-    #Hojas de vida de los desarrolladores
+    #Desarrolladores
+    nombres = ["Laura Ladino Gallego", "Maria Paulina Pupo Marin", "Alejandro López Posada"]
 
-    hojas_vida = ["""Soy aries y tengo 18 años.
-        De pequeña quería ser princesa pero la vida es cruel y me tocó conformarme con ser ingeniera,
-        adoro los animales lo que es curioso por que soy super alérgica a ellos,
+    hojas_vida = ["""Soy aries y tengo 18 años.\n
+        De pequeña quería ser princesa pero la vida es cruel y me tocó conformarme con ser ingeniera,\n
+        adoro los animales lo que es curioso por que soy super alérgica a ellos,\n
         tengo una mini yo en mi casa que dice ser mi hermana y de chiquita me disfraze de un pollo""",
-                  "Pupo", "Petro"]
+        """Pupo""", """Petro"""]
 
     def __init__(self):
         """
@@ -64,9 +66,11 @@ class VentanaInicio(tk.Tk):
         self.resizable(True, True)
         self.config(bg="white smoke")   #Color de fondo, hablar con el equipo para proponer más colores
 
-        #Variables de control de texto (Saludo-Descripción y HDV)
+        #Variables de control de texto (Nombres, Saludo-Descripción y HDV)
+        self.variable_nombres = tk.StringVar()
+
         self.variable_HDV = tk.StringVar()
-        self.variable_HDV.set("   Conoce a nuestros desarrolladores   ")
+        self.variable_HDV.set("""Conoce a nuestros desarrolladores\nHaz clic aquí para ver sus hojas de vida""")
 
         self.variable_Saludo = tk.StringVar()
         self.variable_Saludo.set("""Bienvenido a la aplicación de gestión\nde actividades turísticas y hospedaje""")
@@ -78,6 +82,7 @@ class VentanaInicio(tk.Tk):
         # Creación de los widgets
 
         self.crearFrames()
+        self.asignarMetodos()
 
         # Creación menú
 
@@ -129,6 +134,40 @@ class VentanaInicio(tk.Tk):
 
         #Creación de los widgets de cada frame
 
+        #Elementos de frame_p3
+        self.label_saludo = tk.Label(self.frame_p3, textvariable=self.variable_Saludo, bg="white", fg="black", font=("Candara", 15))
+        self.label_saludo.grid(row=0, column=0, padx=5, pady=5, sticky="nsew")
+
+        # Configurar las filas y columnas para que se expandan
+        self.frame_p3.grid_rowconfigure(0, weight=1, uniform="row")
+        self.frame_p3.grid_columnconfigure(0, weight=1, uniform="column")
+
+        #Elementos de frame_p4
+        self.label_fotos_sistema = tk.Label(self.frame_p4, bg="light gray")
+        self.label_fotos_sistema.config(image=tk.PhotoImage(file=self.ruta_fotos_sistema[self.indice_fotos]))
+        self.indice_fotos += 1
+        self.label_fotos_sistema.grid(row=0, column=0, padx=5, pady=5, sticky="nsew")
+
+        self.boton_ventana_principal = tk.Button(self.frame_p4, text="Abrir la Ventana Principal", bg="white smoke", font=("Candara", 12), activebackground="light gray", command=self.abrirVentanaPrincipal, cursor="hand2")
+        self.boton_ventana_principal.grid(row=1, column=0, padx=5, pady=5, sticky="nsew")
+
+        # Configurar las filas y columnas para que se expandan
+        self.frame_p4.grid_rowconfigure(0, weight=15)
+        self.frame_p4.grid_rowconfigure(1, weight=1)
+        self.frame_p4.grid_columnconfigure(0, weight=1)
+
+        #Elementos de frame_p5
+        self.label_nombre_desarrolladores = tk.Label(self.frame_p5, textvariable=self.variable_nombres, bg="white", fg="black", font=("Candara", 15))
+        self.label_nombre_desarrolladores.grid(row=0, column=0, padx=5, pady=2, sticky="nsew")
+
+        self.label_HDV = tk.Label(self.frame_p5, textvariable=self.variable_HDV, bg="white", fg="black", font=("Candara", 12), cursor="hand2")
+        self.label_HDV.grid(row=1, column=0, padx=5, pady=5, sticky="nsew")
+
+        # Configurar las filas y columnas para que se expandan
+        self.frame_p5.grid_rowconfigure(0, weight=1, uniform="row")
+        self.frame_p5.grid_rowconfigure(1, weight=10, uniform="row")
+        self.frame_p5.grid_columnconfigure(0, weight=1, uniform="column")
+
         # Elementos de frame_p6
         self.label_foto1 = tk.Label(self.frame_p6, bg="light gray")
         self.label_foto1.grid(row=0, column=0, padx=5, pady=5, sticky="nsew")
@@ -148,39 +187,12 @@ class VentanaInicio(tk.Tk):
         self.frame_p6.grid_columnconfigure(0, weight=1)
         self.frame_p6.grid_columnconfigure(1, weight=1)
 
-        #Elementos de frame_p4
-        self.label_fotos_sistema = tk.Label(self.frame_p4, bg="light gray")
-        self.label_fotos_sistema.grid(row=0, column=0, padx=5, pady=5, sticky="nsew")
-
-        self.boton_ventana_principal = tk.Button(self.frame_p4, text="Abrir la Ventana Principal", bg="white smoke", font=("Candara", 12), activebackground="light gray", command=self.abrirVentanaPrincipal)
-        self.boton_ventana_principal.grid(row=1, column=0, padx=5, pady=5, sticky="nsew")
-
-        # Configurar las filas y columnas para que se expandan
-        self.frame_p4.grid_rowconfigure(0, weight=15)
-        self.frame_p4.grid_rowconfigure(1, weight=1)
-        self.frame_p4.grid_columnconfigure(0, weight=1)
-
-        #Elementos de frame_p3
-        self.label_saludo = tk.Label(self.frame_p3, textvariable=self.variable_Saludo, bg="white", fg="black", font=("Candara", 15))
-        self.label_saludo.grid(row=0, column=0, padx=5, pady=5, sticky="nsew")
-
-        # Configurar las filas y columnas para que se expandan
-        self.frame_p3.grid_rowconfigure(0, weight=1, uniform="row")
-        self.frame_p3.grid_columnconfigure(0, weight=1, uniform="column")
-
-        #Elementos de frame_p5
-        self.label_HDV = tk.Label(self.frame_p5, textvariable=self.variable_HDV, bg="white", fg="black", font=("Candara", 12))
-        self.label_HDV.grid(row=0, column=0, padx=5, pady=5, sticky="nsew")
-
-        # Configurar las filas y columnas para que se expandan
-        self.frame_p5.grid_rowconfigure(0, weight=1, uniform="row")
-        self.frame_p5.grid_columnconfigure(0, weight=1, uniform="column")
-
-
-
-
-
-
+    def asignarMetodos(self):
+        """
+        Método que asigna los métodos a los eventos de los widgets.
+        """
+        self.label_HDV.bind("<Button-1>", self.cambiarHDV)
+        self.label_fotos_sistema.bind("<Leaves>", self.cambiarFotosSistema)
 
     def crearMenu(self):
         """
@@ -191,12 +203,37 @@ class VentanaInicio(tk.Tk):
         self.config(menu=self.menu_bar)
 
         self.menu_opciones = tk.Menu(self.menu_bar, tearoff=0, bg="white smoke", activebackground="light gray", activeforeground="black",font=("Candara Light", 12))
-        self.menu_bar.add_cascade(label="Inicio", menu=self.menu_opciones)
+        self.menu_bar.add_cascade(label="Inicio", menu=self.menu_opciones, font=("Candara", 12))
 
         # Creación de las opciones del menú
         self.menu_opciones.add_command(label="Salir", command=self.salir, font=("Candara", 12))
         self.menu_opciones.add_separator()
         self.menu_opciones.add_command(label="Descripción", command=self.descripcionSistema, font=("Candara", 12))
+
+    def cambiarHDV(self, evento):
+        """
+        Método que cambia la hoja de vida de los desarrolladores, asigna el nombre y muestra 4 fotos de cada uno.
+        """
+        self.indice_HDV += 1
+        self.indice_HDV %= 3
+
+        self.variable_nombres.set(self.nombres[self.indice_HDV - 1])
+        self.variable_HDV.set(self.hojas_vida[self.indice_HDV-1])
+
+        grupo_fotos = self.ruta_fotos_desarrolladores[self.indice_HDV-1]
+        self.label_foto1.config(image=tk.PhotoImage(file=grupo_fotos[0]))
+        self.label_foto2.config(image=tk.PhotoImage(file=grupo_fotos[1]))
+        self.label_foto3.config(image=tk.PhotoImage(file=grupo_fotos[2]))
+        self.label_foto4.config(image=tk.PhotoImage(file=grupo_fotos[3]))
+
+    def cambiarFotosSistema(self, evento):
+        """
+        Método que cambia las fotos relacionadas con el sistema.
+        """
+        self.indice_fotos += 1
+        self.indice_fotos %= 5
+
+        self.label_fotos_sistema.config(image=tk.PhotoImage(file=self.ruta_fotos_sistema[self.indice_fotos]))
 
     def salir(self):
         """
