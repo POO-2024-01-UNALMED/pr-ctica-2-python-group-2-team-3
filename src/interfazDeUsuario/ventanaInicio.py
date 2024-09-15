@@ -4,7 +4,7 @@ import tkinter as tk
 from tkinter import messagebox
 
 #importar la ventana principal
-from ventanaPrincipalDeUsuario import VentanaPrincipalDeUsuario
+#from ventanaPrincipalDeUsuario import VentanaPrincipalDeUsuario
 
 
 class VentanaInicio(tk.Tk):
@@ -69,7 +69,7 @@ class VentanaInicio(tk.Tk):
         self.variable_HDV.set("   Conoce a nuestros desarrolladores   ")
 
         self.variable_Saludo = tk.StringVar()
-        self.variable_Saludo.set("Bienvenido a la aplicación de gestión de actividades turísticas y hospedaje")
+        self.variable_Saludo.set("""Bienvenido a la aplicación de gestión\nde actividades turísticas y hospedaje""")
 
         #Contadores para las imágenes
         self.indice_HDV = 0
@@ -110,10 +110,10 @@ class VentanaInicio(tk.Tk):
         self.frame_p4 = tk.Frame(self.frame_p1, bg="white")
         self.frame_p4.grid(row=1, column=0, sticky="nsew", padx=5, pady=5)
 
-        #Configurar las filas y columnas para que se expandan
-        self.frame_p1.grid_rowconfigure(0, weight=1)
-        self.frame_p1.grid_rowconfigure(1, weight=3)
-        self.frame_p1.grid_columnconfigure(0, weight=1)
+        # Configurar las filas y columnas para que se expandan
+        self.frame_p1.grid_rowconfigure(0, weight=1, uniform="row")
+        self.frame_p1.grid_rowconfigure(1, weight=3, uniform="row")
+        self.frame_p1.grid_columnconfigure(0, weight=1, uniform="column")
 
         #Subframes del frame derecho
         self.frame_p5 = tk.Frame(self.frame_p2, bg="white")
@@ -123,9 +123,9 @@ class VentanaInicio(tk.Tk):
         self.frame_p6.grid(row=1, column=0, sticky="nsew", padx=5, pady=5)
 
         #Configurar las filas y columnas para que se expandan
-        self.frame_p2.grid_rowconfigure(0, weight=1)
-        self.frame_p2.grid_rowconfigure(1, weight=3)
-        self.frame_p2.grid_columnconfigure(0, weight=1)
+        self.frame_p2.grid_rowconfigure(0, weight=1, uniform="row")
+        self.frame_p2.grid_rowconfigure(1, weight=3, uniform="row")
+        self.frame_p2.grid_columnconfigure(0, weight=1, uniform="column")
 
         #Creación de los widgets de cada frame
 
@@ -161,7 +161,22 @@ class VentanaInicio(tk.Tk):
         self.frame_p4.grid_columnconfigure(0, weight=1)
 
         #Elementos de frame_p3
-        self.label_saludo = tk.Label(self.frame_p3, textvariable=self.variable_Saludo, bg="white", font=("Arial", 15))
+        self.label_saludo = tk.Label(self.frame_p3, textvariable=self.variable_Saludo, bg="white", fg="black", font=("Candara", 15))
+        self.label_saludo.grid(row=0, column=0, padx=5, pady=5, sticky="nsew")
+
+        # Configurar las filas y columnas para que se expandan
+        self.frame_p3.grid_rowconfigure(0, weight=1, uniform="row")
+        self.frame_p3.grid_columnconfigure(0, weight=1, uniform="column")
+
+        #Elementos de frame_p5
+        self.label_HDV = tk.Label(self.frame_p5, textvariable=self.variable_HDV, bg="white", fg="black", font=("Candara", 12))
+        self.label_HDV.grid(row=0, column=0, padx=5, pady=5, sticky="nsew")
+
+        # Configurar las filas y columnas para que se expandan
+        self.frame_p5.grid_rowconfigure(0, weight=1, uniform="row")
+        self.frame_p5.grid_columnconfigure(0, weight=1, uniform="column")
+
+
 
 
 
@@ -175,7 +190,7 @@ class VentanaInicio(tk.Tk):
         self.menu_bar = tk.Menu(self)
         self.config(menu=self.menu_bar)
 
-        self.menu_opciones = tk.Menu(self.menu_bar, tearoff=0, activebackground="black", activeforeground="white smoke",font=("Candara Light", 12))
+        self.menu_opciones = tk.Menu(self.menu_bar, tearoff=0, bg="white smoke", activebackground="light gray", activeforeground="black",font=("Candara Light", 12))
         self.menu_bar.add_cascade(label="Inicio", menu=self.menu_opciones)
 
         # Creación de las opciones del menú
@@ -203,8 +218,8 @@ class VentanaInicio(tk.Tk):
         Método que abre la ventana principal del usuario.
         """
         self.withdraw()
-        ventana_principal = VentanaPrincipalDeUsuario(self)
-        ventana_principal.deiconify()
+        """"ventana_principal = VentanaPrincipalDeUsuario(self)
+        ventana_principal.deiconify()"""
 
 
 
