@@ -1,7 +1,7 @@
 import sys
 import os
 import tkinter as tk
-from tkinter.ttk import Treeview
+from tkinter import messagebox
 
 
 class VentanaInicio(tk.Tk):
@@ -24,6 +24,10 @@ class VentanaInicio(tk.Tk):
 
         self.crearFrames()
 
+        # Creación menú
+
+        self.crearMenu()
+
 
     def crearFrames(self):
         """
@@ -32,41 +36,82 @@ class VentanaInicio(tk.Tk):
         """
 
         #Frame izquierdo
-        self.frame_left = tk.Frame(self, bg="light gray")
-        self.frame_left.pack(side="left", anchor= "w", fill= "both", expand=True, padx=5, pady=5)
+        self.p1 = tk.Frame(self, bg="light gray")
+        self.p1.pack(side="left", anchor="w", fill="both", expand=True, padx=5, pady=5)
 
         #Frame derecho
-        self.frame_right = tk.Frame(self, bg="light gray")
-        self.frame_right.pack(side="right", anchor= "e", fill= "both", expand=True, padx=5, pady=5)
+        self.p2 = tk.Frame(self, bg="light gray")
+        self.p2.pack(side="right", anchor="e", fill="both", expand=True, padx=5, pady=5)
 
         #Subframes del frame izquierdo
-        self.frame_left_down = tk.Frame(self.frame_left, bg="white")
-        self.frame_left_down.pack(side="bottom", fill="both", expand=True, pady=5, padx=10)
+        self.p4 = tk.Frame(self.p1, bg="white")
+        self.p4.pack(side="bottom", fill="both", expand=True, pady=5, padx=10)
 
-        self.frame_left_up = tk.Frame(self.frame_left, bg="white")
-        self.frame_left_up.pack(side="top", fill="both", expand=True, pady=5, padx=10)
+        self.p3 = tk.Frame(self.p1, bg="white")
+        self.p3.pack(side="top", fill="both", expand=True, pady=5, padx=10)
 
         #Subframes del frame derecho
-        self.frame_right_down = tk.Frame(self.frame_right, bg="white")
-        self.frame_right_down.pack(side="bottom", fill="both", expand=True, pady=5, padx=10)
+        self.p6 = tk.Frame(self.p2, bg="white")
+        self.p6.pack(side="bottom", fill="both", expand=True, pady=5, padx=10)
 
-        self.frame_right_up = tk.Frame(self.frame_right, bg="white")
-        self.frame_right_up.pack(side="top", fill="both", expand=True, pady=5, padx=10)
+        self.p5 = tk.Frame(self.p2, bg="white")
+        self.p5.pack(side="top", fill="both", expand=True, pady=5, padx=10)
 
         #Creación de los widgets de cada frame
 
-        #Fotos derecha
-        self.label_foto1 = tk.Label(self.frame_right_down)
-        self.label_foto1.grid(row=0, column=0, padx=5, pady=5, sticky="nw")
+        # Espacio fotos p6
+        self.label_foto1 = tk.Label(self.p6, bg="light gray")
+        self.label_foto1.grid(row=0, column=0, padx=5, pady=5, sticky="nsew")
 
-        self.label_foto2 = tk.Label(self.frame_right_down)
-        self.label_foto2.grid(row=0, column=5, padx=5, pady=5, sticky="ne")
+        self.label_foto2 = tk.Label(self.p6, bg="light gray")
+        self.label_foto2.grid(row=0, column=1, padx=5, pady=5, sticky="nsew")
 
-        self.label_foto3 = tk.Label(self.frame_right_down)
-        self.label_foto3.grid(row=5, column=0, padx=5, pady=5, sticky="sw")
+        self.label_foto3 = tk.Label(self.p6, bg="light gray")
+        self.label_foto3.grid(row=1, column=0, padx=5, pady=5, sticky="nsew")
 
-        self.label_foto4 = tk.Label(self.frame_right_down)
-        self.label_foto4.grid(row=5, column=5, padx=5, pady=5, sticky="se")
+        self.label_foto4 = tk.Label(self.p6, bg="light gray")
+        self.label_foto4.grid(row=1, column=1, padx=5, pady=5, sticky="nsew")
+
+        # Configurar las filas y columnas para que se expandan
+        self.p6.grid_rowconfigure(0, weight=1)
+        self.p6.grid_rowconfigure(1, weight=1)
+        self.p6.grid_columnconfigure(0, weight=1)
+        self.p6.grid_columnconfigure(1, weight=1)
+
+
+    def crearMenu(self):
+        """
+        Método que crea el menú de la ventana de inicio.
+        """
+        # Creación de la barra de menú
+        self.menu_bar = tk.Menu(self)
+        self.config(menu=self.menu_bar)
+
+        self.menu_opciones = tk.Menu(self.menu_bar, tearoff=0, activebackground="black", activeforeground="white smoke")
+        self.menu_bar.add_cascade(label="Inicio", menu=self.menu_opciones)
+
+        # Creación de las opciones del menú
+        self.menu_opciones.add_command(label="Salir", command=self.salir)
+        self.menu_opciones.add_separator()
+        self.menu_opciones.add_command(label="Descripción", command=self.descripcionSistema)
+
+    def salir(self):
+        """
+        Método que cierra la aplicación.
+        """
+        opcion = messagebox.askyesno("Salir", "¿Está seguro que desea salir de la aplicación?")
+        if opcion:
+            self.destroy()
+
+
+    def descripcionSistema(self):
+        """
+        Método que muestra la descripción del sistema.
+        """
+        print("Sistema de gestión de actividades turísticas")
+
+
+
 
 
 
