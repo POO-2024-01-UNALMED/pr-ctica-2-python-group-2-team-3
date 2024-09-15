@@ -19,9 +19,6 @@ from modulos.reservarHospedaje import reservarHospedaje
 from modulos.planearViaje import planearViaje
 from modulos.modificarReserva import modificarReserva
 
-#Importar Parent Class
-#from ventanaInicio import VentanaInicio
-
 class VentanaPrincipalDeUsuario(tk.Toplevel):
     """
     Clase que representa la ventana principal de la aplicación de gestión de actividades turísticas.

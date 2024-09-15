@@ -53,9 +53,9 @@ class VentanaInicio(tk.Tk):
     nombres = ["Laura Ladino Gallego", "Maria Paulina Pupo Marin", "Alejandro López Posada"]
 
     hojas_vida = ["""Soy aries y tengo 18 años.\n
-        De pequeña quería ser princesa pero la vida es cruel y me tocó conformarme con ser ingeniera,\n
-        adoro los animales lo que es curioso por que soy super alérgica a ellos,\n
-        tengo una mini yo en mi casa que dice ser mi hermana y de chiquita me disfraze de un pollo""",
+    De pequeña quería ser princesa pero la vida es cruel y me tocó conformarme con ser ingeniera,\n
+    adoro los animales lo que es curioso por que soy super alérgica a ellos,\n
+    tengo una mini yo en mi casa que dice ser mi hermana y de chiquita me disfraze de un pollo""",
         """Pupo""", """Petro"""]
 
     def __init__(self):
@@ -65,7 +65,7 @@ class VentanaInicio(tk.Tk):
         super().__init__()
         self.title("Ventana de Inicio")
         self.resizable(True, True)
-        self.config(bg="white smoke")   #Color de fondo, hablar con el equipo para proponer más colores
+        self.config(bg="old lace")   #Color de fondo, hablar con el equipo para proponer más colores
 
         #Variables de control de texto (Nombres, Saludo-Descripción y HDV)
         self.variable_nombres = tk.StringVar()
@@ -81,7 +81,7 @@ class VentanaInicio(tk.Tk):
         self.indice_fotos = 0
 
         # Creación de la imagen del sistema
-        self.foto_sistema = ImageTk.PhotoImage(Image.open(self.ruta_fotos_sistema[-1]))
+        self.foto_sistema = None
 
         # Creación de los widgets
         self.crearFrames()
@@ -98,11 +98,11 @@ class VentanaInicio(tk.Tk):
         """
 
         #Frame izquierdo
-        self.frame_p1 = tk.Frame(self, bg="light gray")
+        self.frame_p1 = tk.Frame(self, bg="#FAC19B")
         self.frame_p1.grid(row=0, column=0, sticky="nsew", padx=5, pady=5)
 
         #Frame derecho
-        self.frame_p2 = tk.Frame(self, bg="light gray")
+        self.frame_p2 = tk.Frame(self, bg="#FAC19B")
         self.frame_p2.grid(row=0, column=1, sticky="nsew", padx=5, pady=5)
 
         #Configurar las filas y columnas para que se expandan
@@ -144,12 +144,13 @@ class VentanaInicio(tk.Tk):
         self.frame_p3.grid_rowconfigure(0, weight=1, uniform="row")
         self.frame_p3.grid_columnconfigure(0, weight=1, uniform="column")
 
-        #Elementos de frame_p4
-        self.label_fotos_sistema = tk.Label(self.frame_p4, bg="light gray")
-        self.label_fotos_sistema.config(image=self.foto_sistema)
+        # Elementos de frame_p4
+        self.label_fotos_sistema = tk.Label(self.frame_p4, bg="#FAC19B")
         self.label_fotos_sistema.grid(row=0, column=0, padx=5, pady=5, sticky="nsew")
 
-        self.boton_ventana_principal = tk.Button(self.frame_p4, text="Abrir la Ventana Principal", bg="white smoke", font=("Candara", 12), activebackground="light gray", command=self.abrirVentanaPrincipal, cursor="hand2")
+        self.boton_ventana_principal = tk.Button(self.frame_p4, text="Abrir la Ventana Principal", bg="old lace",
+                                                 font=("Candara", 12), activebackground="#FAC19B",
+                                                 command=self.abrirVentanaPrincipal, cursor="hand2")
         self.boton_ventana_principal.grid(row=1, column=0, padx=5, pady=5, sticky="nsew")
 
         # Configurar las filas y columnas para que se expandan
@@ -157,11 +158,13 @@ class VentanaInicio(tk.Tk):
         self.frame_p4.grid_rowconfigure(1, weight=1)
         self.frame_p4.grid_columnconfigure(0, weight=1)
 
-        #Elementos de frame_p5
-        self.label_nombre_desarrolladores = tk.Label(self.frame_p5, textvariable=self.variable_nombres, bg="white", fg="black", font=("Candara", 15))
+        # Elementos de frame_p5
+        self.label_nombre_desarrolladores = tk.Label(self.frame_p5, textvariable=self.variable_nombres, bg="white",
+                                                     fg="black", font=("Candara", 15))
         self.label_nombre_desarrolladores.grid(row=0, column=0, padx=5, pady=2, sticky="nsew")
 
-        self.label_HDV = tk.Label(self.frame_p5, textvariable=self.variable_HDV, bg="white", fg="black", font=("Candara", 12), cursor="hand2")
+        self.label_HDV = tk.Label(self.frame_p5, textvariable=self.variable_HDV, bg="white", fg="black",
+                                  font=("Candara", 12), cursor="hand2")
         self.label_HDV.grid(row=1, column=0, padx=5, pady=5, sticky="nsew")
 
         # Configurar las filas y columnas para que se expandan
@@ -170,16 +173,16 @@ class VentanaInicio(tk.Tk):
         self.frame_p5.grid_columnconfigure(0, weight=1, uniform="column")
 
         # Elementos de frame_p6
-        self.label_foto1 = tk.Label(self.frame_p6, bg="light gray")
+        self.label_foto1 = tk.Label(self.frame_p6, bg="#FAC19B")
         self.label_foto1.grid(row=0, column=0, padx=5, pady=5, sticky="nsew")
 
-        self.label_foto2 = tk.Label(self.frame_p6, bg="light gray")
+        self.label_foto2 = tk.Label(self.frame_p6, bg="#FAC19B")
         self.label_foto2.grid(row=0, column=1, padx=5, pady=5, sticky="nsew")
 
-        self.label_foto3 = tk.Label(self.frame_p6, bg="light gray")
+        self.label_foto3 = tk.Label(self.frame_p6, bg="#FAC19B")
         self.label_foto3.grid(row=1, column=0, padx=5, pady=5, sticky="nsew")
 
-        self.label_foto4 = tk.Label(self.frame_p6, bg="light gray")
+        self.label_foto4 = tk.Label(self.frame_p6, bg="#FAC19B")
         self.label_foto4.grid(row=1, column=1, padx=5, pady=5, sticky="nsew")
 
         # Configurar las filas y columnas para que se expandan
@@ -203,7 +206,7 @@ class VentanaInicio(tk.Tk):
         self.menu_bar = tk.Menu(self)
         self.config(menu=self.menu_bar)
 
-        self.menu_opciones = tk.Menu(self.menu_bar, tearoff=0, bg="white smoke", activebackground="light gray", activeforeground="black",font=("Candara Light", 12))
+        self.menu_opciones = tk.Menu(self.menu_bar, tearoff=0, bg="old lace", activebackground="#FAC19B", activeforeground="black",font=("Candara Light", 12))
         self.menu_bar.add_cascade(label="Inicio", menu=self.menu_opciones, font=("Candara", 12))
 
         # Creación de las opciones del menú
@@ -219,10 +222,23 @@ class VentanaInicio(tk.Tk):
         self.indice_HDV %= 3
 
         self.variable_nombres.set(self.nombres[self.indice_HDV - 1])
-        self.variable_HDV.set(self.hojas_vida[self.indice_HDV-1])
+        self.variable_HDV.set(self.hojas_vida[self.indice_HDV - 1])
 
-        grupo_fotos = self.ruta_fotos_desarrolladores[self.indice_HDV-1]
-        self.fotos_HDV = [ImageTk.PhotoImage(Image.open(grupo_fotos[i])) for i in range(4)]
+        grupo_fotos = self.ruta_fotos_desarrolladores[self.indice_HDV - 1]
+        self.fotos_HDV = []
+
+        for i, ruta in enumerate(grupo_fotos):
+            imagen = Image.open(ruta)
+
+            # Obtén las dimensiones del Label
+            label = getattr(self, f'label_foto{i + 1}')
+            label.update_idletasks()  # Asegurarse de que las dimensiones sean correctas
+            width = label.winfo_width()
+            height = label.winfo_height()
+
+            # Redimensiona la imagen para que se ajuste al Label
+            imagen.thumbnail((width, height), Image.LANCZOS)
+            self.fotos_HDV.append(ImageTk.PhotoImage(imagen))
 
         self.label_foto1.config(image=self.fotos_HDV[0])
         self.label_foto2.config(image=self.fotos_HDV[1])
@@ -234,9 +250,19 @@ class VentanaInicio(tk.Tk):
         Método que cambia las fotos relacionadas con el sistema.
         """
         self.indice_fotos += 1
-        self.indice_fotos %= 5
+        self.indice_fotos %= len(self.ruta_fotos_sistema)
 
-        imagen = Image.open(self.ruta_fotos_sistema[self.indice_fotos-1])
+        imagen = Image.open(self.ruta_fotos_sistema[self.indice_fotos])
+
+        # Obtén las dimensiones del Label
+        label = getattr(self, 'label_fotos_sistema')
+        label.update_idletasks()  # Asegurarse de que las dimensiones sean correctas
+        width = label.winfo_width()
+        height = label.winfo_height()
+
+        # Redimensiona la imagen para que se ajuste al Label
+        imagen = imagen.resize((width, height), Image.LANCZOS)
+
         self.foto_sistema = ImageTk.PhotoImage(imagen)
         self.label_fotos_sistema.config(image=self.foto_sistema)
 
@@ -262,15 +288,6 @@ class VentanaInicio(tk.Tk):
         self.withdraw()
         ventana_principal = VentanaPrincipalDeUsuario(self)
         ventana_principal.deiconify()
-
-
-
-"""
-from PIL import Image, ImageTk
-
-image = Image.open("ruta/a/tu/imagen.png")
-photo = ImageTk.PhotoImage(image)
-"""
 
 if __name__ == "__main__":
     app = VentanaInicio()
