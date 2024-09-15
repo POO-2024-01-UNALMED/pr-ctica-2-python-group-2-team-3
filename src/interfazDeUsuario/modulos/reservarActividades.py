@@ -1,6 +1,5 @@
 import tkinter as tk
 from modulos.excepciones import *
-from modulos.metodos import *
 
 def reservarActividades(ventana_usuario, opcion=0, opcionEscogidaAdmin=None):
         textoBase=["Actualmente se encuentra en la ventana de reservar actividades turísticas. Aqui podras registrar tu reserva,",
