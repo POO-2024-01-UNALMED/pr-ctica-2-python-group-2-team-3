@@ -200,21 +200,30 @@ class VentanaPrincipalDeUsuario(tk.Tk):
             texto_informacion = file.read()
         messagebox.showinfo("Información de la aplicación", texto_informacion)
 
-    def salir(self):
-        """
-        Cierra la ventana principal de usuario después de confirmar con el usuario.
-        """
-        valor_salida = messagebox.askokcancel("Salir", "¿Deseas volver a la ventana de inicio?")
-        
-        if valor_salida:
-            self.destroy()
-
     def acerca_de(self):
         """
         Muestra el manual de usuario de la aplicación en un visor de PDF.
         """
         ruta_texto = os.path.join(os.path.dirname(__file__), 'archivos', 'manualDeUsuario.pdf')
         PdfViewer(self, ruta_texto, "Manual de usuario de la aplicación")
+
+    def salir(self):
+        """
+        Cierra la ventana principal de usuario después de confirmar con el usuario.
+        """
+        valor_salida = messagebox.askokcancel("Salir", "¿Deseas volver a la ventana de inicio?")
+
+        if valor_salida:
+            # self.destroy()
+            self.abrirVentanaInicio()
+
+    # Método para abrir las ventanas de inicio - Necesito opinión del equipo para proceder
+    def abrirVentanaInicio(self):
+        """
+        Método para abrir nuevamente la VentanaInicio.
+        """
+        self.master.deiconify()
+        self.destroy()
 
 # Ejecución de la aplicación
 if __name__ == "__main__":

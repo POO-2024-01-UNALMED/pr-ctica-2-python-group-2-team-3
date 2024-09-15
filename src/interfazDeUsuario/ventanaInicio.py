@@ -3,6 +3,9 @@ import os
 import tkinter as tk
 from tkinter import messagebox
 
+#importar la ventana principal
+from ventanaPrincipalDeUsuario import VentanaPrincipalDeUsuario
+
 
 class VentanaInicio(tk.Tk):
     """
@@ -149,7 +152,7 @@ class VentanaInicio(tk.Tk):
         self.label_fotos_sistema = tk.Label(self.frame_p4, bg="light gray")
         self.label_fotos_sistema.grid(row=0, column=0, padx=5, pady=5, sticky="nsew")
 
-        self.boton_ventana_principal = tk.Button(self.frame_p4, text="Abrir la Ventana Principal")
+        self.boton_ventana_principal = tk.Button(self.frame_p4, text="Abrir la Ventana Principal", bg="white smoke", font=("Candara", 12), activebackground="light gray", command=self.abrirVentanaPrincipal)
         self.boton_ventana_principal.grid(row=1, column=0, padx=5, pady=5, sticky="nsew")
 
         # Configurar las filas y columnas para que se expandan
@@ -172,13 +175,13 @@ class VentanaInicio(tk.Tk):
         self.menu_bar = tk.Menu(self)
         self.config(menu=self.menu_bar)
 
-        self.menu_opciones = tk.Menu(self.menu_bar, tearoff=0, activebackground="black", activeforeground="white smoke")
-        self.menu_bar.add_cascade(label="Inicio", menu=self.menu_opciones, font=("Candara Light", 12))
+        self.menu_opciones = tk.Menu(self.menu_bar, tearoff=0, activebackground="black", activeforeground="white smoke",font=("Candara Light", 12))
+        self.menu_bar.add_cascade(label="Inicio", menu=self.menu_opciones)
 
         # Creación de las opciones del menú
-        self.menu_opciones.add_command(label="Salir", command=self.salir, font=("Candara Light", 12))
+        self.menu_opciones.add_command(label="Salir", command=self.salir, font=("Candara", 12))
         self.menu_opciones.add_separator()
-        self.menu_opciones.add_command(label="Descripción", command=self.descripcionSistema, font=("Candara Light", 12))
+        self.menu_opciones.add_command(label="Descripción", command=self.descripcionSistema, font=("Candara", 12))
 
     def salir(self):
         """
@@ -194,6 +197,14 @@ class VentanaInicio(tk.Tk):
         Método que muestra la descripción del sistema.
         """
         print("Sistema de gestión de actividades turísticas")
+
+    def abrirVentanaPrincipal(self):
+        """
+        Método que abre la ventana principal del usuario.
+        """
+        self.withdraw()
+        ventana_principal = VentanaPrincipalDeUsuario(self)
+        ventana_principal.deiconify()
 
 
 
