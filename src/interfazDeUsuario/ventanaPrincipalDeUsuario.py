@@ -19,17 +19,20 @@ from modulos.reservarHospedaje import reservarHospedaje
 from modulos.planearViaje import planearViaje
 from modulos.modificarReserva import modificarReserva
 
-class VentanaPrincipalDeUsuario(tk.Tk):
+#Importar Parent Class
+#from ventanaInicio import VentanaInicio
+
+class VentanaPrincipalDeUsuario(tk.Toplevel):
     """
     Clase que representa la ventana principal de la aplicación de gestión de actividades turísticas.
     Hereda de tk.Tk para crear una interfaz gráfica de usuario utilizando Tkinter.
     """
 
-    def __init__(self):
+    def __init__(self, parent):
         """
         Inicializa la ventana principal, configura el título, icono, fondo, y crea los frames necesarios.
         """
-        super().__init__()
+        super().__init__(parent)
         self.title("Ventana principal de usuario")
         ruta_icono = os.path.join(os.path.dirname(__file__), 'archivos', 'perroLogo.ico')
         self.iconbitmap(ruta_icono)

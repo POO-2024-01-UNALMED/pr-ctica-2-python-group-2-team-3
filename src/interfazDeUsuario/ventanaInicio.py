@@ -5,7 +5,7 @@ from tkinter import messagebox
 from PIL import Image, ImageTk
 
 #importar la ventana principal
-#from ventanaPrincipalDeUsuario import VentanaPrincipalDeUsuario
+from ventanaPrincipalDeUsuario import VentanaPrincipalDeUsuario
 
 
 class VentanaInicio(tk.Tk):
@@ -260,8 +260,8 @@ class VentanaInicio(tk.Tk):
         Método que abre la ventana principal del usuario.
         """
         self.withdraw()
-        """"ventana_principal = VentanaPrincipalDeUsuario(self)
-        ventana_principal.deiconify()"""
+        ventana_principal = VentanaPrincipalDeUsuario(self)
+        ventana_principal.deiconify()
 
 
 
