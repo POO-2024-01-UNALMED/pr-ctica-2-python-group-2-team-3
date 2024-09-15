@@ -38,6 +38,7 @@ class VentanaInicio(tk.Tk):
 
 
     ruta_fotos_desarrolladores = [(ruta_lau1, ruta_lau2, ruta_lau3, ruta_lau4), (ruta_pupo1, ruta_pupo2, ruta_pupo3, ruta_pupo4), (ruta_petro1, ruta_petro2, ruta_petro3, ruta_petro4)]
+    fotos_HDV = []
 
     #Ruta fotos sistema
     ruta_sistema1 = os.path.join(os.path.dirname(__file__), 'archivos', 'sistema1.jpg')
@@ -79,13 +80,14 @@ class VentanaInicio(tk.Tk):
         self.indice_HDV = 0
         self.indice_fotos = 0
 
-        # Creación de los widgets
+        # Creación de la imagen del sistema
+        self.foto_sistema = ImageTk.PhotoImage(Image.open(self.ruta_fotos_sistema[-1]))
 
+        # Creación de los widgets
         self.crearFrames()
         self.asignarMetodos()
 
         # Creación menú
-
         self.crearMenu()
 
 
@@ -144,8 +146,7 @@ class VentanaInicio(tk.Tk):
 
         #Elementos de frame_p4
         self.label_fotos_sistema = tk.Label(self.frame_p4, bg="light gray")
-        self.label_fotos_sistema.config(image=tk.PhotoImage(file=self.ruta_fotos_sistema[self.indice_fotos]))
-        self.indice_fotos += 1
+        self.label_fotos_sistema.config(image=self.foto_sistema)
         self.label_fotos_sistema.grid(row=0, column=0, padx=5, pady=5, sticky="nsew")
 
         self.boton_ventana_principal = tk.Button(self.frame_p4, text="Abrir la Ventana Principal", bg="white smoke", font=("Candara", 12), activebackground="light gray", command=self.abrirVentanaPrincipal, cursor="hand2")
@@ -192,7 +193,7 @@ class VentanaInicio(tk.Tk):
         Método que asigna los métodos a los eventos de los widgets.
         """
         self.label_HDV.bind("<Button-1>", self.cambiarHDV)
-        self.label_fotos_sistema.bind("<Leaves>", self.cambiarFotosSistema)
+        self.label_fotos_sistema.bind("<Enter>", self.cambiarFotosSistema)
 
     def crearMenu(self):
         """
@@ -221,10 +222,12 @@ class VentanaInicio(tk.Tk):
         self.variable_HDV.set(self.hojas_vida[self.indice_HDV-1])
 
         grupo_fotos = self.ruta_fotos_desarrolladores[self.indice_HDV-1]
-        self.label_foto1.config(image=tk.PhotoImage(file=grupo_fotos[0]))
-        self.label_foto2.config(image=tk.PhotoImage(file=grupo_fotos[1]))
-        self.label_foto3.config(image=tk.PhotoImage(file=grupo_fotos[2]))
-        self.label_foto4.config(image=tk.PhotoImage(file=grupo_fotos[3]))
+        self.fotos_HDV = [ImageTk.PhotoImage(Image.open(grupo_fotos[i])) for i in range(4)]
+
+        self.label_foto1.config(image=self.fotos_HDV[0])
+        self.label_foto2.config(image=self.fotos_HDV[1])
+        self.label_foto3.config(image=self.fotos_HDV[2])
+        self.label_foto4.config(image=self.fotos_HDV[3])
 
     def cambiarFotosSistema(self, evento):
         """
@@ -233,7 +236,9 @@ class VentanaInicio(tk.Tk):
         self.indice_fotos += 1
         self.indice_fotos %= 5
 
-        self.label_fotos_sistema.config(image=tk.PhotoImage(file=self.ruta_fotos_sistema[self.indice_fotos]))
+        imagen = Image.open(self.ruta_fotos_sistema[self.indice_fotos-1])
+        self.foto_sistema = ImageTk.PhotoImage(imagen)
+        self.label_fotos_sistema.config(image=self.foto_sistema)
 
     def salir(self):
         """
@@ -248,7 +253,7 @@ class VentanaInicio(tk.Tk):
         """
         Método que muestra la descripción del sistema.
         """
-        print("Sistema de gestión de actividades turísticas")
+        self.variable_Saludo.set("""Bienvenido a la aplicación de gestión\nde actividades turísticas y hospedaje""")
 
     def abrirVentanaPrincipal(self):
         """
@@ -260,8 +265,12 @@ class VentanaInicio(tk.Tk):
 
 
 
+"""
+from PIL import Image, ImageTk
 
-
+image = Image.open("ruta/a/tu/imagen.png")
+photo = ImageTk.PhotoImage(image)
+"""
 
 if __name__ == "__main__":
     app = VentanaInicio()
