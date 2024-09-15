@@ -13,7 +13,7 @@ class FieldFrame(tk.Frame):
     entrada de texto (Entry).
     """
     
-    def __init__(self, parent, tipo_formulario, on_accept, frame_resultado=False, tituloCriterios=None, tituloValores=None, criterios=None, valores=None, habilitado=None, verificaciones=None):
+    def __init__(self, parent, tipo_formulario, on_accept=None, frame_resultado=False, tituloCriterios=None, tituloValores=None, criterios=None, valores=None, habilitado=None, verificaciones=None):
         """
         :param parent (tk.Frame): Frame padre donde se inserta FieldFrame.
         :param tipo_formulario (int): Tipo de formulario a crear (0: Unica opcion de respuesta, 1: Multiples opciones de respuesta, 2: Maximo dos opciones,  3: Entrada de texto)
@@ -37,8 +37,6 @@ class FieldFrame(tk.Frame):
         self.config(bg="white smoke")
         
         self.entriesResultados = []
-        if frame_resultado:
-            self.habilitado = [False for _ in self.valores]
             
         # Crea el frame adecuado según el tipo de opción
         if self.tipo_formulario == 0:
@@ -66,11 +64,12 @@ class FieldFrame(tk.Frame):
         # Definir el estilo para el Combobox
         style = ttk.Style()
         style.configure("TCombobox", font=("Candara Light", 18))
+        tamano_mayor = max(len(valor) for valor in self.valores)
 
         # Creación del Combobox en dos columnas
-        self.combobox = ttk.Combobox(self, textvariable=self.selected_value, values=self.valores, state="readonly" if self.habilitado[0] else "disabled", style="TCombobox")
-        self.combobox.grid(row=1, column=0, columnspan=2, padx=5, pady=5, sticky="ew")
-        self.widgets["seleccion"] = self.combobox
+        widget = ttk.Combobox(self, textvariable=self.selected_value, values=self.valores, state="readonly" if self.habilitado[0] else "disabled", style="TCombobox",width=tamano_mayor)
+        widget.grid(row=1, column=0, columnspan=2, padx=5, pady=5, sticky="ew")
+        self.widgets["seleccion"] = widget
 
     def crearMultipleOpcionFrame(self, titulo):
         """
@@ -85,9 +84,10 @@ class FieldFrame(tk.Frame):
         # Definir el estilo para el Combobox
         style = ttk.Style()
         style.configure("TCombobox", font=("Candara Light", 18))
+        tamano_mayor = max(len(valor) for valor in self.valores)
 
-        # Creación del Combobox en dos columnas
-        self.combobox = ttk.Combobox(self, values=self.valores, state="readonly", style="TCombobox")
+        # Creación del Combobox 
+        self.combobox = ttk.Combobox(self, values=self.valores, state="readonly", style="TCombobox",width=tamano_mayor)
         self.combobox.grid(row=1, column=0, columnspan=2, padx=5, pady=5, sticky="ew")
 
         add_btn = tk.Button(self, text="Añadir",bg="white smoke", font=("Candara Light", 10), command=self.añadirSeleccion)
@@ -132,18 +132,20 @@ class FieldFrame(tk.Frame):
         :param titulo_criterios (str): Texto para el título de los criterios.
         :param titulo_valores (str): Texto para el título de los valores.
         """
-        tk.Label(self, text=titulo_criterios, bg="white smoke", font=("Candara Light", 13)).grid(row=0, column=0, padx=10, pady=10, sticky="w")
-        tk.Label(self, text=titulo_valores, bg="white smoke", font=("Candara Light", 13)).grid(row=0, column=1, padx=10, pady=10, sticky="w")
-        
+        if (titulo_criterios and titulo_valores):
+            tk.Label(self, text=titulo_criterios, bg="white smoke", font=("Candara Light", 13)).grid(row=0, column=0, padx=10, pady=10, sticky="w")
+            tk.Label(self, text=titulo_valores, bg="white smoke", font=("Candara Light", 13)).grid(row=0, column=1, padx=10, pady=10, sticky="w")
+            
         self.entries = {}
         
         # Creación de los campos Entry
         for i, criterio in enumerate(self.criterios):
+            tamano=len(self.valores[i]) + 1 if (self.valores and self.valores[i] is not None and len(self.valores[i])>20) else 20
             tk.Label(self, text=criterio, bg="white smoke", font=("Candara Light", 13)).grid(row=i + 1, column=0, padx=5, pady=5, sticky="w")
             entry = tk.Entry(self, font=("Candara Light", 13))
             entry.grid(row=i + 1, column=1, padx=5, pady=5, sticky="ew")
             entry.insert(0, self.valores[i] if self.valores and self.valores[i] is not None else "")
-            entry.config(state="disabled" if not self.habilitado[i] else "normal")
+            entry.config(state="disabled" if not self.habilitado[i] else "normal",width=tamano)
             self.entries[criterio] = entry
             
 
@@ -151,7 +153,7 @@ class FieldFrame(tk.Frame):
         """
         Crea los botones de Aceptar y Borrar en el frame con un tamaño fijo.
         """
-        botones_frame = tk.Frame(self)
+        botones_frame = tk.Frame(self,bg="white smoke")
         botones_frame.grid(row=100, column=0, columnspan=2, padx=10, pady=10, sticky="ew")
 
         # Crear el botón de "Aceptar" con un tamaño fijo
@@ -206,8 +208,6 @@ class FieldFrame(tk.Frame):
         """
         if self.tipo_formulario == 0:
             self.selected_value.set(None)
-            self.combobox.set("")
-            self.focus()
         elif self.tipo_formulario in [1, 2]:
             self.seleccionados = []
             self.combobox.set("")
@@ -253,11 +253,12 @@ class FieldFrame(tk.Frame):
         :param valor: valor del criterio
         """
         _, numFilas = self.grid_size()
+        tamano=len(valor) + 1 if len(valor)>20 else 20
         tk.Label(self, text=criterio, bg="white smoke", font=("Candara Light", 13)).grid(row=numFilas, column=0, padx=5, pady=5, sticky="w")
         entry = tk.Entry(self, font=("Candara Light", 13))
         entry.grid(row=numFilas, column=1, padx=5, pady=5, sticky="ew")
         entry.insert(0, valor)
-        entry.config(state="disabled")
+        entry.config(state="disabled",width=tamano)
         
     def lanzarExcepcionesEntradaTexto(self, seleccion):
         """
@@ -269,7 +270,10 @@ class FieldFrame(tk.Frame):
         # self.verificaciones es de la forma [("Criterio",funcion),...]
         for criterio, funcion in self.verificaciones:
             try:
-                funcion(seleccion[criterio])
+                if criterio=="*":
+                    funcion(seleccion)
+                else:
+                    funcion(seleccion[criterio])
             except ErrorAplicacion as e:
                 messagebox.showerror("Error", str(e))
                 return True

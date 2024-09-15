@@ -47,9 +47,9 @@ class FechaInvalidaError(ErrorEntrada):
         self.tipo_error=tipo_error
         self.fecha=fecha
         self.mensaje_base = "La fecha ingresada no es válida."
-        super().__init__(f"{self.mensaje_base}\n{tipo_error}. Valor ingresado: {fecha}")
+        super().__init__(f"{self.mensaje_base}\n{tipo_error}\nValor ingresado: {fecha}")
 
-class ExistenciaErorr(ErrorEntrada):
+class ExistenciaEror(ErrorEntrada):
     """Error cuando no se ingresa un objeto existente"""
     def __init__(self,objeto,valor):
         """
@@ -58,7 +58,7 @@ class ExistenciaErorr(ErrorEntrada):
         """
         self.objeto=objeto
         self.valor=valor
-        self.mensaje_base = " ingresado no se encuenta registrado en la base de datos. Asegurese de ingresas un valor exixtente"
+        self.mensaje_base = " ingresado no se encuenta registrado en la base de datos. Asegurese de ingresar un valor existente"
         super().__init__(f"{objeto}{self.mensaje_base}.\nValor ingresado: {valor}")
 
 # Rama formulario
@@ -74,6 +74,12 @@ class OpcionNoSeleccionadaError(ErrorFormulario):
         self.mensaje_base = "No se ha seleccionado ninguna opción válida."
         super().__init__(self.mensaje_base)
 
+class FiltroSeleccionadoError(ErrorFormulario):
+    """Error cuando no se selecciona el mismo filtro dos veces"""
+    def __init__(self, filtros):
+        self.mensaje_base = " No puedes elegir el mismo filtro dos veces."
+        super().__init__(f"{self.mensaje_base}\nFiltros seleccionados actualmente: {filtros}")
+        
 class MaximoDosOpcionesError(ErrorFormulario):
     """Error cuando se seleccionan más de las dos opciones permitidas"""
     def __init__(self, opciones_seleccionadas):
@@ -176,29 +182,31 @@ def verificarFecha(formato,criterio,fecha):
 
     # Verifica el formato DD/MM/AAAA
     if formato == 1:
-        if re.match(r'^\d{2}/\d{2}/\d{4}$', fecha):
+        if re.match(r'^\d{1,2}/\d{1,2}/\d{4}$', fecha):
             dia, mes, año = map(int, fecha.split('/'))
             if not (1 <= mes <= 12):
                 raise FechaInvalidaError("Mes inválido, asegurese de ingresar un numero entre 1-12.", fecha)
             
             # Días por mes (considerando febrero con 28 días)
             dias_en_mes = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
-            if año < 2024:
-                raise FechaInvalidaError("Año inválido, asegurese de ingresar un año que no haya pasado.", fecha)
             if not (1 <= dia <= dias_en_mes[mes - 1]):
                 raise FechaInvalidaError(f"Día inválido para el mes, le recordamos que {meses[mes - 1]} tiene {dias_en_mes[mes - 1]} dias.", fecha)
+            
+            if año < 2024:
+                raise FechaInvalidaError("Año inválido, asegurese de ingresar un año que no haya pasado.", fecha)
+        else:
+            raise FormatoInvalidoError(formatos[formato], criterio, fecha)
         
     # Verifica el formato MM/AAAA
     elif formato == 2:
-        if re.match(r'^\d{2}/\d{4}$', fecha):
+        if re.match(r'^\d{1,2}/\d{4}$', fecha):
             mes, año = map(int, fecha.split('/'))
             if not (1 <= mes <= 12):
                 raise FechaInvalidaError("Mes inválido, asegurese de ingresar un numero entre 1-12.", fecha)
             if año < 2024:
-                raise FechaInvalidaError("Año inválido,asegurese de ingresar un año que no haya pasado", fecha)
-    
-    else:
-        raise FormatoInvalidoError(formatos[formato], criterio, fecha)
+                raise FechaInvalidaError("Año inválido,asegurese de ingresar un año que no haya pasado.", fecha)
+        else:
+            raise FormatoInvalidoError(formatos[formato], criterio, fecha)
 
 def verificarFormato(valor,criterio,formato):
         """
@@ -215,7 +223,52 @@ def verificarFormato(valor,criterio,formato):
         elif formato in [1,2]:
             # Utiliza el método verificarFecha para validar las fechas
                 verificarFecha(formato, criterio, valor)
-                
+
+def verificarGuia(datos_personales):
+    """
+        Verifica si se ingreso un objeto guia existente.
+        :param datos_personales(list[(str,str)]): de la forma {("Nombre",nombreIngresado),("Edad",edadIngresada),("Destino",destinoIngresado)}
+    """
+    from gestorAplicacion.guia import Guia
+    if Guia.verificarGuia(datos_personales["Nombre"],datos_personales["Edad"],datos_personales["Destino"])==False:
+            raise  ExistenciaEror("El guia",datos_personales)
+
+def verificarActividad(datos_actividad):
+    """
+        Verifica si se ingreso un objeto actividad existente.
+        :param datos_actividad(list[(str,str)]): de la forma {("Nombre",nombreIngresado),("Destino",destinoIngresado)}
+    """
+    from gestorAplicacion.actividad import Actividad
+    if Actividad.verificarActividad(datos_actividad["Nombre"],datos_actividad["Destino"])==False:
+            raise  ExistenciaEror("La actividad",datos_actividad)
+        
+def verificarDestino(nombre):
+    """
+        Verifica si se ingreso un objeto destino existente.
+        :param destino(str): el nombre del destino
+    """
+    from gestorAplicacion.destino import Destino
+    print(Destino.listaNombres())
+    if not any(n.lower() == nombre.lower() for n in Destino.listaNombres()):
+        raise ExistenciaEror("El destino", nombre)
+
+
+def verificarCodigo(codigo):
+    """
+        Verifica si se ingreso un objeto codigo existente.
+        :param codigo: el numero del codigo
+    """
+    if codigo=="None":
+            raise  ExistenciaEror("El codigo",codigo)
+
+def verificarTitular(edad):
+    try:
+        verificarNumero(edad)
+    except ErrorAplicacion as e:
+        raise NumeroInvalidoError(edad)
+    if edad<18:
+        raise EdadTitularError(edad)
+                  
 """EJEMPLO DE USO"""
 # Ejemplo de cómo lanzar y manejar las excepciones
 def probar_excepcion(excepcion):
@@ -249,6 +302,15 @@ if __name__ == "__main__":
         probar_excepcion(excepcion)
     """
 #Ejemplo de uso de los metodos
+    try:
+        verificarFecha(1,"fecha","5/2/2024")  
+    except (FechaInvalidaError,FormatoInvalidoError) as e:
+       messagebox.showerror("Error", str(e))
+
+    try:
+        verificarFecha(2,"Fecha","2/2024")  
+    except (FechaInvalidaError,FormatoInvalidoError) as e:
+        messagebox.showerror("Error", str(e))   
 """
     try:
         verificarNumero("-5")  # Esto debería lanzar una excepción
@@ -261,14 +323,5 @@ if __name__ == "__main__":
     except NombreInvalidoError as e:
         messagebox.showerror("Error", str(e))
 """
-""""
-    try:
-        verificarFecha("Fecha DD/MM/AAAA","fecha","31/02/2024")  # Esto debería lanzar una excepción por día inválido
-    except FechaInvalidaError as e:
-       messagebox.showerror("Error", str(e))
 
-    try:
-        verificarFecha("02/2024")  # Esto debería ser válido
-    except FechaInvalidaError as e:
-        messagebox.showerror("Error", str(e))
-"""
+    

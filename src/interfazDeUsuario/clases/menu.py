@@ -20,6 +20,10 @@ class Menu(tk.Frame):
         self.buttons = {}  # Diccionario para almacenar los botones del menú principal
         self.selected_button = None  # Botón actualmente seleccionado
 
+        self.crearFrames()
+        self.crearMenu()  # Crear los botones del menú
+        
+    def crearFrames(self):
         # Frame para el menú principal
         self.frameMenu = tk.Frame(self, height=30, bg="white")
         self.frameMenu.grid(row=0, column=0, sticky="ew")
@@ -30,10 +34,8 @@ class Menu(tk.Frame):
         self.frameSubMenu.grid(row=1, column=0, sticky="ew")
         self.frameSubMenu.grid_rowconfigure(0, weight=1)
         self.frameSubMenu.grid_remove()  # Ocultar inicialmente
-
-        self.createMenu()  # Crear los botones del menú
-
-    def createMenu(self):
+        
+    def crearMenu(self):
         """
         Crea los botones del menú principal.
         """
@@ -117,7 +119,7 @@ def main():
     submenus = [["New", "Open", "Save"], ["Cut", "Copy", "Paste"], ["Zoom In", "Zoom Out", "Reset"]]
 
     # Crear una instancia del menú y agregarlo a la ventana principal
-    menu = Menu(root, window=type('obj', (object,), {'handle_submenu': handleSubmenu}),
+    menu = Menu(root, window=type('obj', (object,), {'handleSubmenu': handleSubmenu}),
                 opciones_menu=opciones_menu, submenus=submenus)
     menu.pack(fill="both", expand=True)
 
