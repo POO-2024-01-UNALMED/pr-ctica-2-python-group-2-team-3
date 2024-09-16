@@ -1,5 +1,6 @@
 import tkinter as tk
 from excepciones import *
+from tkinter import messagebox
 
 from gestorAplicacion.actividad import Actividad
 from gestorAplicacion.tipoActividad import TipoActividad

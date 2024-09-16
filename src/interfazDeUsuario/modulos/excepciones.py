@@ -334,7 +334,7 @@ if __name__ == "__main__":
     """
 #Ejemplo de uso de los metodos
     try:
-        verificarFecha(1,"fecha","5/2/2024")  
+        verificarFecha(1,"fecha","5/20/2024")  
     except (FechaInvalidaError,FormatoInvalidoError) as e:
        messagebox.showerror("Error", str(e))
 
