@@ -38,7 +38,7 @@ class VentanaPrincipalDeUsuario(tk.Toplevel):
         """
         super().__init__(parent)
         self.title("Ventana principal de usuario")
-        self.iconbitmap("archivos\\perroLogo.ico")
+        #self.iconbitmap("archivos\\perroLogo.ico")
         self.config(bg="white smoke")
         self.resizable(width=False, height=False)
         self.geometry("1450x800+35+0")
