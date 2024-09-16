@@ -15,6 +15,7 @@ class Reserva:
         self._its_planeacion = its_planeacion
         self._descuento_por_cancelacion = ''
         self._descuento = 0
+        self._destino = destino
         Reserva._reservas_existentes.append(self)
 
     @staticmethod
@@ -147,9 +148,9 @@ class Reserva:
             self._clientes[0].get_hotel().eliminar_reservacion(self._clientes)
 
     @staticmethod
-    def buscar_reserva(grupo, clientes):
+    def buscar_reserva(codigo):
         for reserva in Reserva._reservas_existentes:
-            if reserva._clientes == clientes and grupo in reserva._plan.get_grupos():
+            if codigo == reserva.get_codigo():
                 return reserva
         return None
 

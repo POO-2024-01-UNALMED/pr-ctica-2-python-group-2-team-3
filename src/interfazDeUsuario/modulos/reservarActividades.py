@@ -47,7 +47,7 @@ def reservarActividades(ventana_usuario, opcion=0, seleccion=None):
 
     if opcion == 2: # Paso 2: Elegir plan de actividades y terminar procesos
         if seleccion:
-            ventana_usuario.reserva = buscarReserva(seleccion["Código"])
+            ventana_usuario.reserva = Reserva.buscar_reserva(seleccion["Código"])
         
         elegirPlanTuristico(ventana_usuario)
         ventana_usuario.borrarResultados("___________ Resumen de la reserva realizada___________")

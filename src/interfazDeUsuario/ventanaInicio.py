@@ -159,11 +159,11 @@ computadora, desde entonces los sistemas han representado una parte importante d
         self.frame_p3.grid_columnconfigure(0, weight=1, uniform="column")
 
         # Elementos de frame_p4
-        self.label_fotos_sistema = tk.Label(self.frame_p4, bg="#D2B48C")
+        self.label_fotos_sistema = tk.Label(self.frame_p4, bg="#F5DEB3")
         self.label_fotos_sistema.grid(row=0, column=0, padx=5, pady=5, sticky="nsew")
 
         self.boton_ventana_principal = tk.Button(self.frame_p4, text="Abrir la Ventana Principal", bg="old lace",
-                                                 font=("Candara", 12), activebackground="#D2B48C",
+                                                 font=("Candara", 12), activebackground="#F5DEB3",
                                                  command=self.abrirVentanaPrincipal,
                                                  cursor="hand2")
         self.boton_ventana_principal.grid(row=1, column=0, padx=5, pady=5, sticky="nsew")
@@ -175,11 +175,11 @@ computadora, desde entonces los sistemas han representado una parte importante d
 
         # Elementos de frame_p5
         self.label_nombre_desarrolladores = tk.Label(self.frame_p5, textvariable=self.variable_nombres, bg="white smoke",
-                                                     fg="black",font=("Candara Light", 15))
+                                                     fg="black",font=("Candara", 15))
         self.label_nombre_desarrolladores.grid(row=0, column=0, padx=5, pady=2, sticky="nsew")
 
         self.label_HDV = tk.Text(self.frame_p5, bg="white smoke", fg="black",
-                                  font=("Candara light", 15), cursor="hand2")
+                                  font=("Candara", 12), cursor="hand2")
         self.label_HDV.grid(row=1, column=0, padx=5, pady=5, sticky="nsew")
         self.label_HDV.config(state='normal')
         self.label_HDV.insert(1.0, """Conoce a nuestros desarrolladores\nHaz clic aquí para ver sus hojas de vida""")
@@ -191,16 +191,16 @@ computadora, desde entonces los sistemas han representado una parte importante d
         self.frame_p5.grid_columnconfigure(0, weight=1, uniform="column")
 
         # Elementos de frame_p6
-        self.label_foto1 = tk.Label(self.frame_p6, bg="#D2B48C")
+        self.label_foto1 = tk.Label(self.frame_p6, bg="#F5DEB3")
         self.label_foto1.grid(row=0, column=0, padx=5, pady=5, sticky="nsew")
 
-        self.label_foto2 = tk.Label(self.frame_p6, bg="#D2B48C")
+        self.label_foto2 = tk.Label(self.frame_p6, bg="#F5DEB3")
         self.label_foto2.grid(row=0, column=1, padx=5, pady=5, sticky="nsew")
 
-        self.label_foto3 = tk.Label(self.frame_p6, bg="#D2B48C")
+        self.label_foto3 = tk.Label(self.frame_p6, bg="#F5DEB3")
         self.label_foto3.grid(row=1, column=0, padx=5, pady=5, sticky="nsew")
 
-        self.label_foto4 = tk.Label(self.frame_p6, bg="#D2B48C")
+        self.label_foto4 = tk.Label(self.frame_p6, bg="#F5DEB3")
         self.label_foto4.grid(row=1, column=1, padx=5, pady=5, sticky="nsew")
 
         # Configurar las filas y columnas para que se expandan
