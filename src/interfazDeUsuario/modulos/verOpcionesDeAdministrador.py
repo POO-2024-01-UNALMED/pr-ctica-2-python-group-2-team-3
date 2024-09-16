@@ -2,12 +2,12 @@ import tkinter as tk
 from excepciones import *
 from tkinter import messagebox
 
-from gestorAplicacion.actividad import Actividad
-from gestorAplicacion.tipoActividad import TipoActividad
-from gestorAplicacion.idioma import Idioma
-from gestorAplicacion.destino import Destino
-from gestorAplicacion.guia import Guia
-from gestorAplicacion.reserva import Reserva
+from interfazDeUsuario.gestorAplicacion.actividad import Actividad
+from interfazDeUsuario.gestorAplicacion.tipoActividad import TipoActividad
+from interfazDeUsuario.gestorAplicacion.idioma import Idioma
+from interfazDeUsuario.gestorAplicacion.destino import Destino
+from interfazDeUsuario.gestorAplicacion.guia import Guia
+from interfazDeUsuario.gestorAplicacion.reserva import Reserva
 
 ListaIdiomas=Idioma.listaNombres()
 ListaTipoActividad=TipoActividad.listaNombres()
