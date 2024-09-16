@@ -8,7 +8,7 @@ from PIL import Image, ImageTk
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), 'clases')))
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), 'modulos')))
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), 'gestorAplicacion')))
-
+directorio_actual = os.path.dirname(os.path.abspath(__file__))
 # Importar clases 
 from clases.menu import Menu
 from clases.pdfViewer import PdfViewer
@@ -37,8 +37,10 @@ class VentanaPrincipalDeUsuario(tk.Toplevel):
         Inicializa la ventana principal, configura el título, icono, fondo, y crea los frames necesarios.
         """
         super().__init__(parent)
+        self.parent=parent
         self.title("Ventana principal de usuario")
-        self.iconbitmap("archivos\\perroLogo.ico")
+        ruta_icono = os.path.join(directorio_actual, 'archivos', 'perroLogo.ico')
+        self.iconbitmap(ruta_icono)
         self.config(bg="white smoke")
         self.resizable(width=False, height=False)
         self.geometry("1450x8000+35+0")
@@ -69,7 +71,8 @@ class VentanaPrincipalDeUsuario(tk.Toplevel):
         self.titulo_frame.grid(row=0, column=0, sticky="nsew", padx=10)
 
         # Titulo
-        self.logo_image = tk.PhotoImage(file="archivos\\logoMontaña.png")  # Añadir la imagen al título_frame
+        ruta_logo = os.path.join(directorio_actual, 'archivos', 'logoMontaña.png')
+        self.logo_image = tk.PhotoImage(file=ruta_logo)  # Añadir la imagen al título_frame
         self.logo_label = tk.Label(self.titulo_frame, image=self.logo_image, bg="white smoke", padx=5)
         self.logo_label.grid(row=0, column=0, padx=5, sticky="w")
 
@@ -100,8 +103,9 @@ class VentanaPrincipalDeUsuario(tk.Toplevel):
         if not opcion:  # Crear interfaz de inicio
             # Destruir widgets de funcionalidades
             self.borrarFrame(self.interaccion_usuario_frame)
-                    
-            self.imagen_fondo = tk.PhotoImage(file="archivos\\fondo.png")  # Cargar la imagen de fondo
+            
+            ruta_fondo = os.path.join(directorio_actual, 'archivos', 'fondo.png')        
+            self.imagen_fondo = tk.PhotoImage(file=ruta_fondo)  # Cargar la imagen de fondo
             self.canvas = tk.Canvas(self.interaccion_usuario_frame,width=1450,height=635, bg="white", highlightthickness=0)
             self.canvas.grid(row=0, column=0, sticky="nsew")  # Hacer que el canvas se expanda
             self.canvas.update_idletasks()  # Ajustar el tamaño del canvas según la ventana
@@ -172,7 +176,8 @@ class VentanaPrincipalDeUsuario(tk.Toplevel):
         """
         Muestra la información de la aplicación desde un archivo de texto en un cuadro de mensaje.
         """
-        with open("archivos\\informacion_aplicacion.txt", "r", encoding="utf-8") as file:
+        ruta_texto = os.path.join(directorio_actual, 'archivos', 'informacion_aplicacion.txt')  
+        with open(ruta_texto, "r", encoding="utf-8") as file:
             texto_informacion = file.read()
         messagebox.showinfo("Información de la aplicación", texto_informacion)
 
@@ -183,14 +188,8 @@ class VentanaPrincipalDeUsuario(tk.Toplevel):
         valor_salida = messagebox.askokcancel("Salir", "¿Deseas volver a la ventana de inicio?")
         
         if valor_salida:
-            self.abrirVentanaInicio()
-
-    def abrirVentanaInicio(self):
-        """
-        Método para abrir nuevamente la VentanaInicio.
-        """
-        self.master.deiconify()
-        self.destroy()
+            self.parent.deiconify()
+            self.destroy()
 
     def acerca_de(self):
         """
@@ -353,11 +352,15 @@ class VentanaPrincipalDeUsuario(tk.Toplevel):
     
     def frameImagen(self):
         self.imagen_frame = tk.Frame(self.procesosYConsultas_frame, bg="white smoke")
-        self.image = tk.PhotoImage(file="archivos\\imagenGuia.png") 
+        ruta_Imagen = os.path.join(directorio_actual, 'archivos', 'imagenGuia.png')
+        self.image = tk.PhotoImage(ruta_Imagen) 
         self.logo_label = tk.Label(self.procesosYConsultas_frame, image=self.image, bg="white smoke", padx=5)
         self.logo_label.grid(row=0, column=0, padx=5, sticky="ew")
   
 # Ejecución de la aplicación
 if __name__ == "__main__":
-    app = VentanaPrincipalDeUsuario()
-    app.mainloop()
+    root = tk.Tk()
+    root.withdraw()
+    ventana=VentanaPrincipalDeUsuario(root)
+    root.mainloop()
+
