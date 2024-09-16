@@ -1,5 +1,15 @@
 import tkinter as tk
 from modulos.excepciones import *
+from excepciones import *
+from gestorAplicacion.actividad import Actividad
+from gestorAplicacion.tipoActividad import TipoActividad
+from gestorAplicacion.idioma import Idioma
+from gestorAplicacion.destino import Destino
+from gestorAplicacion.guia import Guia
+from gestorAplicacion.reserva import Reserva
+from gestorAplicacion.cliente import Cliente
+from gestorAplicacion.suscripcion import Suscripcion
+from gestorAplicacion.grupo import Grupo
 
 def reservarActividades(ventana_usuario, opcion=0, seleccion=None):
     """
