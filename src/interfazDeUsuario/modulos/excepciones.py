@@ -277,7 +277,7 @@ def verificarCodigo(codigo):
         :param codigo: el numero del codigo
     """
     from gestorAplicacion.reserva import Reserva
-    if Reserva.buscar_reserva(codigo) is None:
+    if Reserva.buscar_reserva(int(codigo)) is None:
             raise ExistenciaEror("El codigo",codigo)
 
 def verificarTitular(edad):

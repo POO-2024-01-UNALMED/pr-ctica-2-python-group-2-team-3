@@ -18,7 +18,8 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), 'gestorA
 
 
 #importar la ventana principal
-from src.interfazDeUsuario.ventanaPrincipalDeUsuario import VentanaPrincipalDeUsuario
+from ventanaPrincipalDeUsuario import VentanaPrincipalDeUsuario
+
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '.')))
