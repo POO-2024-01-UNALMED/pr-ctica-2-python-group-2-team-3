@@ -1,6 +1,7 @@
 import sys
 import os
 import tkinter as tk
+from logging import disable
 from tkinter import messagebox
 from PIL import Image, ImageTk
 
@@ -14,6 +15,11 @@ class VentanaInicio(tk.Tk):
     Donde se maneja la información relacionada brindar la información del sistema y saludo de bienvenida.
     Hereda de tk.Tk para crear una interfaz gráfica de usuario utilizando Tkinter.
     """
+# ----------------------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------------------
+# -------------------------------------CREAR LA VENTANA DE USUARIO------------------------------------
+# ----------------------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------------------
 
     # Atributos de la clase
 
@@ -52,11 +58,18 @@ class VentanaInicio(tk.Tk):
     #Desarrolladores
     nombres = ["Laura Ladino Gallego", "Maria Paulina Pupo Marin", "Alejandro López Posada"]
 
-    hojas_vida = ["""Soy aries y tengo 18 años.\n
-    De pequeña quería ser princesa pero la vida es cruel y me tocó conformarme con ser ingeniera,\n
-    adoro los animales lo que es curioso por que soy super alérgica a ellos,\n
-    tengo una mini yo en mi casa que dice ser mi hermana y de chiquita me disfraze de un pollo""",
-        """Pupo""", """Petro"""]
+    hojas_vida = ["""Soy aries y tengo 18 años. De pequeña quería ser princesa pero la vida es cruel y me tocó
+conformarme con ser ingeniera, adoro los animales lo que es curioso por que soy super
+alérgica a ellos, tengo una mini yo en mi casa que dice ser mi hermana y de chiquita me
+disfrazé de un pollo.""",
+        """Tengo 18 años y adoro la lectura, los videojuegos y las manualidades. Soy una persona
+muy creativa y me encanta aprender cosas nuevas. Mi mayor sueño es viajar por el mundo
+y conocer diferentes culturas. Además, me encanta la comida picante aunque no me caiga muy bien y
+tengo 4 hermanos menores que adoro molestar.""",
+        """Tengo 19 años y nunca olvidaré estar jugando el el primer Halo en el portátil de mi padre
+cuando tenía 5 o 6 años, probablemente fue mi primer acercamiento con una
+computadora, desde entonces los sistemas han representado una parte importante de mi vida."""
+        ]
 
     def __init__(self):
         """
@@ -67,11 +80,8 @@ class VentanaInicio(tk.Tk):
         self.resizable(True, True)
         self.config(bg="old lace")   #Color de fondo, hablar con el equipo para proponer más colores
 
-        #Variables de control de texto (Nombres, Saludo-Descripción y HDV)
+        #Variables de control de texto (Nombres, Saludo-Descripción)
         self.variable_nombres = tk.StringVar()
-
-        self.variable_HDV = tk.StringVar()
-        self.variable_HDV.set("""Conoce a nuestros desarrolladores\nHaz clic aquí para ver sus hojas de vida""")
 
         self.variable_Saludo = tk.StringVar()
         self.variable_Saludo.set("""Bienvenido a la aplicación de gestión\nde actividades turísticas y hospedaje""")
@@ -150,7 +160,8 @@ class VentanaInicio(tk.Tk):
 
         self.boton_ventana_principal = tk.Button(self.frame_p4, text="Abrir la Ventana Principal", bg="old lace",
                                                  font=("Candara", 12), activebackground="#FAC19B",
-                                                 command=self.abrirVentanaPrincipal, cursor="hand2")
+                                                 command=self.abrirVentanaPrincipal,
+                                                 cursor="hand2")
         self.boton_ventana_principal.grid(row=1, column=0, padx=5, pady=5, sticky="nsew")
 
         # Configurar las filas y columnas para que se expandan
@@ -163,13 +174,16 @@ class VentanaInicio(tk.Tk):
                                                      fg="black", font=("Candara", 15))
         self.label_nombre_desarrolladores.grid(row=0, column=0, padx=5, pady=2, sticky="nsew")
 
-        self.label_HDV = tk.Label(self.frame_p5, textvariable=self.variable_HDV, bg="white", fg="black",
+        self.label_HDV = tk.Text(self.frame_p5, bg="white", fg="black",
                                   font=("Candara", 12), cursor="hand2")
         self.label_HDV.grid(row=1, column=0, padx=5, pady=5, sticky="nsew")
+        self.label_HDV.config(state='normal')
+        self.label_HDV.insert(1.0, """Conoce a nuestros desarrolladores\nHaz clic aquí para ver sus hojas de vida""")
+        self.label_HDV.config(state='disabled')
 
         # Configurar las filas y columnas para que se expandan
         self.frame_p5.grid_rowconfigure(0, weight=1, uniform="row")
-        self.frame_p5.grid_rowconfigure(1, weight=10, uniform="row")
+        self.frame_p5.grid_rowconfigure(1, weight=5, uniform="row")
         self.frame_p5.grid_columnconfigure(0, weight=1, uniform="column")
 
         # Elementos de frame_p6
@@ -196,7 +210,7 @@ class VentanaInicio(tk.Tk):
         Método que asigna los métodos a los eventos de los widgets.
         """
         self.label_HDV.bind("<Button-1>", self.cambiarHDV)
-        self.label_fotos_sistema.bind("<Enter>", self.cambiarFotosSistema)
+        self.label_fotos_sistema.bind("<Leave>", self.cambiarFotosSistema)
 
     def crearMenu(self):
         """
@@ -214,6 +228,12 @@ class VentanaInicio(tk.Tk):
         self.menu_opciones.add_separator()
         self.menu_opciones.add_command(label="Descripción", command=self.descripcionSistema, font=("Candara", 12))
 
+# ----------------------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------------------
+# -------------------------------------------METODOS EXTRA--------------------------------------------
+# ----------------------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------------------
+
     def cambiarHDV(self, evento):
         """
         Método que cambia la hoja de vida de los desarrolladores, asigna el nombre y muestra 4 fotos de cada uno.
@@ -222,7 +242,11 @@ class VentanaInicio(tk.Tk):
         self.indice_HDV %= 3
 
         self.variable_nombres.set(self.nombres[self.indice_HDV - 1])
-        self.variable_HDV.set(self.hojas_vida[self.indice_HDV - 1])
+
+        self.label_HDV.config(state='normal')
+        self.label_HDV.delete(1.0, tk.END)
+        self.label_HDV.insert(tk.END, self.hojas_vida[self.indice_HDV - 1])
+        self.label_HDV.config(state='disabled')
 
         grupo_fotos = self.ruta_fotos_desarrolladores[self.indice_HDV - 1]
         self.fotos_HDV = []
@@ -266,6 +290,20 @@ class VentanaInicio(tk.Tk):
         self.foto_sistema = ImageTk.PhotoImage(imagen)
         self.label_fotos_sistema.config(image=self.foto_sistema)
 
+    def abrirVentanaPrincipal(self):
+        """
+        Método que abre la ventana principal del usuario.
+        """
+        self.withdraw()
+        ventana_principal = VentanaPrincipalDeUsuario(self)
+        ventana_principal.deiconify()
+
+# ----------------------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------------------
+# -------------------------------GESTIONAR FUNCIONALIDADES DEL MENU-----------------------------------
+# ----------------------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------------------
+
     def salir(self):
         """
         Método que cierra la aplicación.
@@ -279,15 +317,7 @@ class VentanaInicio(tk.Tk):
         """
         Método que muestra la descripción del sistema.
         """
-        self.variable_Saludo.set("""Bienvenido a la aplicación de gestión\nde actividades turísticas y hospedaje""")
-
-    def abrirVentanaPrincipal(self):
-        """
-        Método que abre la ventana principal del usuario.
-        """
-        self.withdraw()
-        ventana_principal = VentanaPrincipalDeUsuario(self)
-        ventana_principal.deiconify()
+        self.variable_Saludo.set("""A través de esta aplicación podrás registrarte,\nplanear tu viaje, gestionar tus grupos y destinos,\nreservar actividades, y manejar tu hospedaje.\nAdemás, ofrecemos beneficios exclusivos\ncomo descuentos.""")
 
 if __name__ == "__main__":
     app = VentanaInicio()
