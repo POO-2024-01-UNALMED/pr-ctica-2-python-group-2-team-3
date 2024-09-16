@@ -1,5 +1,15 @@
 import tkinter as tk
-from modulos.excepciones import *
+from excepciones import *
+from excepciones import *
+from gestorAplicacion.actividad import Actividad
+from gestorAplicacion.tipoActividad import TipoActividad
+from gestorAplicacion.idioma import Idioma
+from gestorAplicacion.destino import Destino
+from gestorAplicacion.guia import Guia
+from gestorAplicacion.reserva import Reserva
+from gestorAplicacion.cliente import Cliente
+from gestorAplicacion.suscripcion import Suscripcion
+from gestorAplicacion.grupo import Grupo
 
 def reservarActividades(ventana_usuario, opcion=0, seleccion=None):
     """
@@ -37,7 +47,7 @@ def reservarActividades(ventana_usuario, opcion=0, seleccion=None):
 
     if opcion == 2: # Paso 2: Elegir plan de actividades y terminar procesos
         if seleccion:
-            ventana_usuario.reserva = buscarReserva(seleccion["Código"])
+            ventana_usuario.reserva = Reserva.buscar_reserva(seleccion["Código"])
         
         elegirPlanTuristico(ventana_usuario)
         ventana_usuario.borrarResultados("___________ Resumen de la reserva realizada___________")

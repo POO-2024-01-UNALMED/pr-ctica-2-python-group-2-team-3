@@ -1,5 +1,3 @@
-import tkinter as tk
-from tkinter import messagebox
 from clases.fieldFrame import FieldFrame
 from modulos.excepciones import *
 

@@ -1,8 +1,10 @@
+import os
 import tkinter as tk
 from tkinter import messagebox
-from PIL import Image, ImageTk
+
 import fitz  # PyMuPDF
-import os
+from PIL import Image, ImageTk
+
 
 class PdfViewer(tk.Toplevel):
     """

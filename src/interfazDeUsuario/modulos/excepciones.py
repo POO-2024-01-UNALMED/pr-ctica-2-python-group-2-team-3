@@ -1,5 +1,5 @@
-import tkinter as tk
 import re
+import tkinter as tk
 from tkinter import messagebox
 
 """EXCEPCIONES PERSONALIZADAS"""
@@ -276,8 +276,9 @@ def verificarCodigo(codigo):
         Verifica si se ingreso un objeto codigo existente.
         :param codigo: el numero del codigo
     """
-    if codigo=="None":
-            raise  ExistenciaEror("El codigo",codigo)
+    from gestorAplicacion.reserva import Reserva
+    if Reserva.buscar_reserva(codigo) is None:
+            raise ExistenciaEror("El codigo",codigo)
 
 def verificarTitular(edad):
     try:

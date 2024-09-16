@@ -1,34 +1,39 @@
 import sys
 import os
-import pickle
-
 
 # Ajustar las rutas para las importaciones
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), 'clases')))
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), 'modulos')))
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), 'gestorAplicacion')))
 
 
 
-from gestorAplicacion.cliente import Cliente
-from gestorAplicacion.grupo import Grupo
-from gestorAplicacion.plan import Plan
+
+from src.gestorAplicacion.cliente import Cliente
+from src.gestorAplicacion.grupo import Grupo
+from src.gestorAplicacion.plan import Plan
+from src.gestorAplicacion.destino import Destino
+from src.gestorAplicacion.tipoActividad import TipoActividad
+from src.gestorAplicacion.actividad import Actividad
+from src.gestorAplicacion.guia import Guia
+from src.gestorAplicacion.idioma import Idioma
+from src.gestorAplicacion.reserva import Reserva
+
+
+
+
+
 from serializador import Serializador
-from gestorAplicacion.idioma import Idioma
 
 
-# Importar clases 
-from clases.menu import Menu
-from clases.pdfViewer import PdfViewer
-from clases.fieldFrame import FieldFrame
-from clases.tabla import Tabla
+
+
+
+# Importar clases
 
 # Importar modulos
-from modulos.verOpcionesDeAdministrador import *
-from modulos.reservarActividades import reservarActividades
-from modulos.reservarHospedaje import reservarHospedaje
-from modulos.planearViaje import planearViaje
-from modulos.modificarReserva import modificarReserva
 def main():
     # Crear listas para todo lo que se quiere guardar
     destinos = []
