@@ -112,11 +112,11 @@ computadora, desde entonces los sistemas han representado una parte importante d
         """
 
         #Frame izquierdo
-        self.frame_p1 = tk.Frame(self, bg="white smoke")
+        self.frame_p1 = tk.Frame(self, bg="#F5DEB3")
         self.frame_p1.grid(row=0, column=0, sticky="nsew", padx=5, pady=5)
 
         #Frame derecho
-        self.frame_p2 = tk.Frame(self, bg="#E7D7C9")
+        self.frame_p2 = tk.Frame(self, bg="#F5DEB3")
         self.frame_p2.grid(row=0, column=1, sticky="nsew", padx=5, pady=5)
 
         #Configurar las filas y columnas para que se expandan
@@ -125,10 +125,10 @@ computadora, desde entonces los sistemas han representado una parte importante d
         self.grid_columnconfigure(1, weight=1, uniform="column")
 
         #Subframes del frame izquierdo
-        self.frame_p3 = tk.Frame(self.frame_p1, bg="#E7D7C9")
+        self.frame_p3 = tk.Frame(self.frame_p1, bg="white smoke")
         self.frame_p3.grid(row=0, column=0, sticky="nsew", padx=5, pady=5)
 
-        self.frame_p4 = tk.Frame(self.frame_p1, bg="#E7D7C9")
+        self.frame_p4 = tk.Frame(self.frame_p1, bg="white smoke")
         self.frame_p4.grid(row=1, column=0, sticky="nsew", padx=5, pady=5)
 
         # Configurar las filas y columnas para que se expandan
@@ -137,15 +137,10 @@ computadora, desde entonces los sistemas han representado una parte importante d
         self.frame_p1.grid_columnconfigure(0, weight=1, uniform="column")
 
         #Subframes del frame derecho
-        self.frameColor=tk.Frame(self.frame_p2, bg="#E7D7C9")
-        self.frameColor.grid(row=0, column=0, sticky="nsew", padx=5, pady=5)
-        self.frameColor.grid_rowconfigure(0, weight=15)
-        self.frameColor.grid_columnconfigure(0, weight=1)
-        
-        self.frame_p5 = tk.Frame(self.frameColor, bg="white smoke")
-        self.frame_p5.grid(row=0, column=0, sticky="nsew",padx=5, pady=5)
+        self.frame_p5 = tk.Frame(self.frame_p2, bg="white smoke")
+        self.frame_p5.grid(row=0, column=0, sticky="nsew", padx=5, pady=5)
 
-        self.frame_p6 = tk.Frame(self.frame_p2, bg="#E7D7C9")
+        self.frame_p6 = tk.Frame(self.frame_p2, bg="white smoke")
         self.frame_p6.grid(row=1, column=0, sticky="nsew", padx=5, pady=5)
 
         #Configurar las filas y columnas para que se expandan
@@ -164,11 +159,11 @@ computadora, desde entonces los sistemas han representado una parte importante d
         self.frame_p3.grid_columnconfigure(0, weight=1, uniform="column")
 
         # Elementos de frame_p4
-        self.label_fotos_sistema = tk.Label(self.frame_p4, bg="white smoke")
+        self.label_fotos_sistema = tk.Label(self.frame_p4, bg="#F5DEB3")
         self.label_fotos_sistema.grid(row=0, column=0, padx=5, pady=5, sticky="nsew")
 
-        self.boton_ventana_principal = tk.Button(self.frame_p4, text="Abrir la Ventana Principal", bg="#EDE9E3",
-                                                 font=("Candara", 12), activebackground="#E7D7C9",
+        self.boton_ventana_principal = tk.Button(self.frame_p4, text="Abrir la Ventana Principal", bg="old lace",
+                                                 font=("Candara", 12), activebackground="#FFDAB9",
                                                  command=self.abrirVentanaPrincipal,
                                                  cursor="hand2")
         self.boton_ventana_principal.grid(row=1, column=0, padx=5, pady=5, sticky="nsew")
@@ -196,16 +191,16 @@ computadora, desde entonces los sistemas han representado una parte importante d
         self.frame_p5.grid_columnconfigure(0, weight=1, uniform="column")
 
         # Elementos de frame_p6
-        self.label_foto1 = tk.Label(self.frame_p6, bg="White smoke")
+        self.label_foto1 = tk.Label(self.frame_p6, bg="#F5DEB3")
         self.label_foto1.grid(row=0, column=0, padx=5, pady=5, sticky="nsew")
 
-        self.label_foto2 = tk.Label(self.frame_p6, bg="White smoke")
+        self.label_foto2 = tk.Label(self.frame_p6, bg="#F5DEB3")
         self.label_foto2.grid(row=0, column=1, padx=5, pady=5, sticky="nsew")
 
-        self.label_foto3 = tk.Label(self.frame_p6, bg="White smoke")
+        self.label_foto3 = tk.Label(self.frame_p6, bg="#F5DEB3")
         self.label_foto3.grid(row=1, column=0, padx=5, pady=5, sticky="nsew")
 
-        self.label_foto4 = tk.Label(self.frame_p6, bg="White smoke")
+        self.label_foto4 = tk.Label(self.frame_p6, bg="#F5DEB3")
         self.label_foto4.grid(row=1, column=1, padx=5, pady=5, sticky="nsew")
 
         # Configurar las filas y columnas para que se expandan
@@ -229,7 +224,7 @@ computadora, desde entonces los sistemas han representado una parte importante d
         self.menu_bar = tk.Menu(self)
         self.config(menu=self.menu_bar)
 
-        self.menu_opciones = tk.Menu(self.menu_bar, tearoff=0, bg="#EDE9E3", activebackground="#E7D7C9", activeforeground="black",font=("Candara Light", 12))
+        self.menu_opciones = tk.Menu(self.menu_bar, tearoff=0, bg="old lace", activebackground="#FFDAB9", activeforeground="black",font=("Candara Light", 12))
         self.menu_bar.add_cascade(label="Inicio", menu=self.menu_opciones, font=("Candara", 12))
 
         # Creación de las opciones del menú
