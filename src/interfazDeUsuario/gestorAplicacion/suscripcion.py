@@ -21,10 +21,6 @@ class Suscripcion:
                 titular.set_suscripcion(self)
 
     @staticmethod
-    def ultima_fecha_reserva(fechas):
-        return fechas[-1]
-
-    @staticmethod
     def verificar_suscripcion(nombre, edad, lista_fechas):
         for i, cliente in enumerate(Suscripcion._lista_clientes):
             if cliente.get_nombre() == nombre:
@@ -109,9 +105,13 @@ class Suscripcion:
         elif tipo == "VIP":
             return 8
         return 0
+    
+    """@staticmethod
+    def ultima_fecha_reserva(fechas):
+        return fechas[-1]"""
 
     def asignar_fecha_vencimiento(self, fechas):
-        ultima_fecha = Suscripcion.ultima_fecha_reserva(fechas)
+        ultima_fecha = fechas[-1]
         self._fecha_vencimiento = [ultima_fecha[0], ultima_fecha[1], ultima_fecha[2] + 2]
 
     @staticmethod
@@ -121,6 +121,7 @@ class Suscripcion:
             texto = f"Tipo: {tipo}\nPrecio: {Suscripcion.precio_por_tipo(tipo)}\nDescuentos: {Suscripcion.descuentos_por_tipo(tipo)}\nCapacidad: {Suscripcion.capacidad_por_tipo(tipo)}"
             posibles_suscripciones.append(texto)
         return posibles_suscripciones
+    
 
     def verificar_fecha_vencimiento(self, ultima_fecha):
         if self._fecha_vencimiento[2] < ultima_fecha[2]:
