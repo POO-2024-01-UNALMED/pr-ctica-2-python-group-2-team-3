@@ -7,7 +7,7 @@ from gestorAplicacion.idioma import Idioma
 from gestorAplicacion.destino import Destino
 from gestorAplicacion.guia import Guia
 from gestorAplicacion.reserva import Reserva
-#Hola :)
+
 ListaIdiomas=Idioma.listaNombres()
 ListaTipoActividad=TipoActividad.listaNombres()
 ListaDestinos=Destino.listaNombres()
