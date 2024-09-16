@@ -1,5 +1,5 @@
 import tkinter as tk
-from modulos.excepciones import *
+from excepciones import *
 from excepciones import *
 from gestorAplicacion.actividad import Actividad
 from gestorAplicacion.tipoActividad import TipoActividad

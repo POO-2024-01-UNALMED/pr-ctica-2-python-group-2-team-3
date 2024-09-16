@@ -1,5 +1,5 @@
-import tkinter as tk
 import re
+import tkinter as tk
 from tkinter import messagebox
 
 """EXCEPCIONES PERSONALIZADAS"""

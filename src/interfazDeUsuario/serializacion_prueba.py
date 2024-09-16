@@ -1,6 +1,13 @@
 import sys
 import os
 
+from gestorAplicacion.actividad import Actividad
+from gestorAplicacion.destino import Destino
+from gestorAplicacion.guia import Guia
+from gestorAplicacion.idioma import Idioma
+from gestorAplicacion.reserva import Reserva
+from gestorAplicacion.tipoActividad import TipoActividad
+
 # Ajustar las rutas para las importaciones
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), 'clases')))
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), 'modulos')))
@@ -12,7 +19,9 @@ from src.gestorAplicacion.cliente import Cliente
 from src.gestorAplicacion.grupo import Grupo
 from src.gestorAplicacion.plan import Plan
 from serializador import Serializador
-from src.gestorAplicacion.idioma import Idioma
+
+from serializador import Serializador
+
 
 
 # Importar clases
