@@ -62,7 +62,10 @@ class VentanaInicio(tk.Tk):
 conformarme con ser ingeniera, adoro los animales lo que es curioso por que soy super
 alérgica a ellos, tengo una mini yo en mi casa que dice ser mi hermana y de chiquita me
 disfrazé de un pollo.""",
-        """Pupo""",
+        """Tengo 18 años y adoro la lectura, los videojuegos y las manualidades. Soy una persona
+muy creativa y me encanta aprender cosas nuevas. Mi mayor sueño es viajar por el mundo
+y conocer diferentes culturas. Además, me encanta la comida picante aunque no me caiga muy bien y
+tengo 4 hermanos menores que adoro molestar.""",
         """Tengo 19 años y nunca olvidaré estar jugando el el primer Halo en el portátil de mi padre
 cuando tenía 5 o 6 años, probablemente fue mi primer acercamiento con una
 computadora, desde entonces los sistemas han representado una parte importante de mi vida."""
