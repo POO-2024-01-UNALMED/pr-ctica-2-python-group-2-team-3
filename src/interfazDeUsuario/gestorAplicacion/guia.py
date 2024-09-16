@@ -1,6 +1,5 @@
-from gestorAplicacion.persona import Persona
 from gestorAplicacion.registrable import Registrable
-
+from gestorAplicacion.persona import Persona
 
 class Guia(Persona, Registrable):
     _guias = []
@@ -20,10 +19,7 @@ class Guia(Persona, Registrable):
             ("Edad:", str(self._edad)),
             ("Destino:", str(self._destinoNombre) if self._destinoNombre else "Cartagena"),
             ("Idiomas",', '.join(str(idioma.getNombre()) for idioma in self._idiomas)),
-            ("Tipo Actividades:", ', '.join(str(tipo.getNombre()) for tipo in self._tipo_actividades)),
-            ("Días Ocupados:", ', '.join(str(dia) for dia in self._dias_ocupados) if self._dias_ocupados is [] else "Aún no tiene"),
-            ("Días No Disponibles:", ', '.join(str(dia) for dia in self._dias_no_disponibles)if self._dias_no_disponibles is [] else "Aún no tiene")
-        ]
+            ("Tipo Actividades:", ', '.join(str(tipo.getNombre()) for tipo in self._tipo_actividades))]
 
 
     def ingresarTipoActividades(self, listaTiposActividad):
@@ -47,9 +43,12 @@ class Guia(Persona, Registrable):
                     actividad.getGuias().append(self)
 
     @staticmethod
-    def buscarGuia(nombre):
-        for guia in Guia._guias:
-            if nombre == guia.getNombre():
+    def buscarGuia(guiaNombre,guiaEdad,guiaDestino):
+        guias=Guia.mostrarGuias()
+        for guia in guias:
+            if (guia._nombre.lower() == guiaNombre.lower() and
+                guia._edad == int(guiaEdad) and
+                guia._destinoNombre.lower() == guiaDestino.lower()):
                 return guia
         guia=Guia.crear_guia()
         return guia
@@ -83,7 +82,7 @@ class Guia(Persona, Registrable):
         resumen.append(("Tipo de retiro:",tipoRetiro))
         for dia in self._dias_ocupados:
             if dia not in self._dias_no_disponibles and (lista_fechas is None or dia in lista_fechas):
-                Grupo.retirarGuia(self, dia)
+                Grupo.retirar_guia(self, dia)
 
         if lista_fechas:
             for dia in lista_fechas:
@@ -91,7 +90,7 @@ class Guia(Persona, Registrable):
                     self._dias_ocupados.append(dia)
                 if dia not in self._dias_no_disponibles:
                     self._dias_no_disponibles.append(dia)
-                resumen.append(("Fechas a retirar:",lista_fechas))
+            resumen.append(("Fechas a retirar:",lista_fechas[0]+" - "+lista_fechas[-1]))
    
         resumen=resumen+Guia.generar_lista_estadisticas()
         return resumen
@@ -106,7 +105,7 @@ class Guia(Persona, Registrable):
     @staticmethod   
     def generar_lista_estadisticas():
         import random
-        estadisticas = ["Grupos eliminados","Reservas reubicadas","Reservas sin reubicar","Bonos regalados"]
+        estadisticas = ["Grupos eliminados","Reservas reubicadas","Reservas sin reubicar"]
         lista_estadisticas = [(stat, str(random.randint(1, 20))) for stat in estadisticas]
         return lista_estadisticas
     
@@ -114,20 +113,19 @@ class Guia(Persona, Registrable):
     def mostrarGuias(cls):
         from gestorAplicacion.tipoActividad import TipoActividad
         from gestorAplicacion.idioma import Idioma
+        from gestorAplicacion.destino import Destino
+        from gestorAplicacion.reserva import Reserva
         if cls._guias==[]:
             nombres = ["Carlos", "Ana", "María", "Juan", "Luisa", "Pedro", "Laura", "Santiago", "Laura", "Pablo"]
-            edades = [35, 29, 41, 32, 28, 46, 33, 37, 25, 40]
-            destinos = ["Cartagena", "Bogotá", "Medellín", "Santa Marta", "San Andrés", "Cali", 
-                        "Parque Nacional Natural Tayrona", "Eje Cafetero", "Salento", "Guatapé"]
+            edades = [35, 29, 41, 32, 28, 46, 33, 37, 18, 40]
+            destinos = Destino.listaNombres()
             actividades = [
                 [TipoActividad.CULTURALES, TipoActividad.FAMILIARES],[TipoActividad.ECOLOGICAS, TipoActividad.EXTREMAS],
                 [TipoActividad.ACUATICAS],[TipoActividad.DEPORTIVAS],[TipoActividad.RESTAURANTE, TipoActividad.HOSPEDAJE],[TipoActividad.CULTURALES, TipoActividad.DEPORTIVAS],
                 [TipoActividad.ECOLOGICAS],[TipoActividad.ACUATICAS, TipoActividad.CULTURALES],
                 [TipoActividad.FAMILIARES, TipoActividad.RESTAURANTE],[TipoActividad.EXTREMAS, TipoActividad.DEPORTIVAS]]
-            dias_ocupados = [["12/01/2024"], ["02/02/2024"], ["14/03/2024"], ["05/04/2024"], ["10/05/2024"],
-                ["03/06/2024"], ["11/07/2024"], ["08/08/2024"], ["01/09/2024"], ["20/10/2024"]]
-            dias_no_disponibles = [["20/01/2024"], ["18/02/2024"], ["25/03/2024"], ["15/04/2024"], ["20/05/2024"],
-                ["12/06/2024"], ["22/07/2024"], ["18/08/2024"], ["10/09/2024"], ["30/10/2024"]]
+            dias_ocupados = Reserva.generar_lista_fechas_aleatorias()
+            dias_no_disponibles = Reserva.generar_lista_fechas_aleatorias()
             idiomas = [[Idioma.INGLES, Idioma.ESPANOL], [Idioma.FRANCES, Idioma.ESPANOL], [Idioma.ITALIANO],
                 [Idioma.PORTUGUES], [Idioma.ESPANOL, Idioma.INGLES], [Idioma.ESPANOL], [Idioma.INGLES, Idioma.FRANCES],
                 [Idioma.ESPANOL, Idioma.ITALIANO], [Idioma.ESPANOL], [Idioma.INGLES, Idioma.PORTUGUES]]
@@ -137,61 +135,47 @@ class Guia(Persona, Registrable):
         return  cls._guias
          
     @staticmethod
-    def mostrarDisponibilidadGuias(fecha, destino=None, idioma=None):
-        from gestorAplicacion.grupo import Grupo
-        from gestorAplicacion.reserva import Reserva
+    def mostrarDisponibilidadGuias(dia_str, destino=None, idioma=None, guia=None,filtros=None):
+        from gestorAplicacion.idioma import Idioma
         from gestorAplicacion.destino import Destino
-        tabla = []
-        guias_ocupados = guias_disponibles = contador_actividades = contador_clientes = contador_guias_idioma = 0
-        destinos, idiomas, actividades = [], [], []
+        import random
+        from datetime import datetime 
+        actividades = ["Tour en bicicleta", "Excursión en la montaña", "Visita guiada al museo", "Buceo", 
+                    "Senderismo", "Paseo en barco", "Tour de comida", "Clase de surf", "Tour histórico", 
+                    "Visita a viñedos"]
+        destinos =Destino.listaNombres()
+        estados = ['Disponible', 'Ocupado']
+        guias = ['Carlos', 'María', 'Juan', 'Pedro', 'Ana', 'Luis', 'Fernanda', 'Camila', 'Alejandro', 'Sofia',"Valeria", "Mateo", "Sebastián", "Lucía", "Diego", "Sofía", "Andrés", "Daniela", "Tomás", "Isabella", "Laura", "Paulina", "Santiago", "Lana"]
+        dia = datetime.strptime(dia_str, '%d/%m/%Y')
+        if filtros:
+            filtrosVerDisponibilidadGuias = {
+                "Disponibilidad de todos los guías":random.choice(estados),
+                "Solo los guías disponibles":'Disponible',
+                "Solo los guías ocupados":'Ocupado'}
+            estado=filtrosVerDisponibilidadGuias[filtros]
+        else:
+            estado=random.choice(estados)
+        lista_tuplas = {
+            "Destino":destino if destino else random.choice(destinos),
+            "Nombre":guia if guia else random.choice(guias),
+            "Idioma":"Ninguno" if estado!='Ocupado' else idioma if idioma else random.choice([idioma.value[0] for idioma in Idioma]),
+            "Dia":dia_str,"Mes":dia.strftime('%B'),
+            "Estado":estado,"Actividad":random.choice(actividades) if estado=='Ocupado' else "Ninguna",
+            "Personas":"0" if estado!='Ocupado' else str(random.randint(1, 100)),"Guias":str(random.randint(1, 15)),"Actividades":str(random.randint(1, 20))}
 
-        for guia in Guia._guias:
-            grupo_guia = Grupo.buscarGrupo(fecha, guia)
-            is_destino_match = (destino is None) or guia.getDestino() == destino
-            is_idioma_match = (idioma is None) or grupo_guia.getIdioma() == idioma
+        return lista_tuplas
 
-            if is_destino_match and fecha in guia._dias_ocupados and is_idioma_match:
-                guias_ocupados += 1
-                destinos.append(guia.getDestino())
-                idiomas.append(grupo_guia.getIdioma())
-                for reserva in grupo_guia.getListaReservas():
-                    contador_clientes += len(reserva)
-                if grupo_guia.getActividad() not in actividades:
-                    actividades.append(grupo_guia.getActividad())
-                    contador_actividades += 1
-            else:
-                guias_disponibles += 1
-
-            if idioma and idioma in guia.getIdiomas():
-                contador_guias_idioma += 1
-
-        actividad = f"{contador_actividades}/{len(actividades)}"
-        destino_comun = Destino.buscarDestinoComun(destinos)
-        idioma_mas_usado = Grupo.buscarIdiomaMasUsado(idiomas)
-
-        tabla.extend([
-            fecha[2],  # año
-            Reserva.mostrarMes(fecha[1]),  # mes
-            fecha[0],  # día
-            guias_disponibles,  # guías disponibles
-            guias_ocupados,  # guías ocupados
-            actividad,  # contador actividades
-            destino_comun if destino else destino,  # destino común
-            idioma_mas_usado if idioma else idioma,  # idioma más usado
-            contador_clientes,  # contador clientes
-            contador_guias_idioma  # contador guías por idioma
-        ])
-
-        return tabla
-    
     @staticmethod
     def verificarGuia(guiaNombre,guiaEdad,guiaDestino):
-        guias=Guia.mostrarGuias()
+        guias = Guia.mostrarGuias()
+        
         for guia in guias:
-            if guia._nombre.lower()==guiaNombre.lower() and guia._edad==guiaEdad and guia._destinoNombre.lower()==guiaDestino.lower():
+            if (guia._nombre.lower() == guiaNombre.lower() and
+                guia._edad == int(guiaEdad) and
+                guia._destinoNombre.lower() == guiaDestino.lower()):
                 return True
-            else:
-                return False
+        return False
+
             
     def mostrarIntinerario(self, fecha):
         from gestorAplicacion.grupo import Grupo
@@ -253,6 +237,9 @@ class Guia(Persona, Registrable):
         
     def setDestinoNombre(self,nombre):
         self._destinoNombre=nombre
+        
+    def getDestinoNombre(self):
+        return self._destinoNombre
 
     def getDiasOcupados(self):
         return self._dias_ocupados

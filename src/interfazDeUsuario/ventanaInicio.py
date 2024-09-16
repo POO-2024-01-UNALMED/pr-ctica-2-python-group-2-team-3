@@ -112,11 +112,11 @@ computadora, desde entonces los sistemas han representado una parte importante d
         """
 
         #Frame izquierdo
-        self.frame_p1 = tk.Frame(self, bg="#CDC6C3")
+        self.frame_p1 = tk.Frame(self, bg="white smoke")
         self.frame_p1.grid(row=0, column=0, sticky="nsew", padx=5, pady=5)
 
         #Frame derecho
-        self.frame_p2 = tk.Frame(self, bg="#CDC6C3")
+        self.frame_p2 = tk.Frame(self, bg="#E7D7C9")
         self.frame_p2.grid(row=0, column=1, sticky="nsew", padx=5, pady=5)
 
         #Configurar las filas y columnas para que se expandan
@@ -184,7 +184,7 @@ computadora, desde entonces los sistemas han representado una parte importante d
         self.label_nombre_desarrolladores.grid(row=0, column=0, padx=5, pady=2, sticky="nsew")
 
         self.label_HDV = tk.Text(self.frame_p5, bg="white smoke", fg="black",
-                                  font=("Candara light", 14), cursor="hand2")
+                                  font=("Candara", 12), cursor="hand2")
         self.label_HDV.grid(row=1, column=0, padx=5, pady=5, sticky="nsew")
         self.label_HDV.config(state='normal')
         self.label_HDV.insert(1.0, """Conoce a nuestros desarrolladores\nHaz clic aquí para ver sus hojas de vida""")

@@ -7,20 +7,18 @@ class Actividad(Registrable):
         self._destino = destino
         self._tipo = tiposActividad
         self._guias = guias
-        self._deestinonombre=destinoNombre
+        self._destinoNombre=destinoNombre
         self._capacidad = capacidad
         self._clasificacion = clasificacion
         self._precio = precio
-        if destinoNombre or destino.getNombre():
-            destinop=destinoNombre if destinoNombre else destino.getNombre()
-            Actividad._actividades.append((nombre,destinop))
+        Actividad._actividades.append(self)
 
     def toString(self):
         return [
             ("Nombre:", str(self._nombre)),
-            ("Destino:", self._destino.getNombre()),
+            ("Destino:", self._destinoNombre if self._destinoNombre is not None else "Cartagena"),
             ("Tipos de Actividad:", ', '.join(TipoActividad.getNombre() for TipoActividad in self._tipo)),
-            ("Guias:", ', '.join(guia.getNombre() for guia in self._guias)),
+            ("Guias:", ', '.join(guia.getNombre() for guia in self._guias) if self._guias else "Juan,valeria,sofia"),
             ("Capacidad:", str(self._capacidad)),
             ("Clasificacion:", str(self._clasificacion)),
             ("Precio:", str(self._precio))
@@ -29,8 +27,8 @@ class Actividad(Registrable):
     def ingresarGuia(self):
         from gestorAplicacion.guia import Guia
         for tipo in self._tipo:
-            for guia in Guia.getGuias():
-                if tipo in guia.getTipoActividades() and guia.getDestino() == self._destino and guia not in self._guias:
+            for guia in Guia.mostrarGuias():
+                if tipo in guia.getTipoActividades() and guia.getDestinoNombre() == self._destinoNombre and guia not in self._guias:
                     self._guias.append(guia)
 
     def ingresarTipoActividades(self, listaTiposActividad):
@@ -45,21 +43,34 @@ class Actividad(Registrable):
     def verificarActividad(actividadNombre,actividadDestino):
         actividades=Actividad.mostrarActividades()
         for a in actividades:
-            if a._nombre==actividadNombre and a._destinoNombre==actividadDestino:
+            if (a._nombre.lower() == actividadNombre.lower() and
+                a._destinoNombre.lower() == actividadDestino.lower()):
                 return True
-            else : return False
+        else : return False
 
+    @classmethod
     def mostrarActividades(cls):
         if cls._actividades==[]:
-            nombres = ["Tour Ciudad", "Aventura Extrema", "Visita Histórica", "Recorrido Gastronómico", "Safari Ecológico", "Tour Nocturno", "Excursión Acuática", "Escalada de Montaña", 
-                "Taller Cultural", "Senderismo", "Exploración Submarina", "Paseo en Bicicleta", "Trekking en la Selva", "Tour de Arte Urbano", "Ruta del Café"]
-            destinos = ["Cartagena", "Bogotá", "Medellín", "Santa Marta", "San Andrés", "Cali", "Parque Nacional Natural Tayrona", 
-                "Eje Cafetero", "Salento", "Guatapé", "San Andrés", "Bogotá", "Eje Cafetero", "Medellín", "Salento"]
-            
-            actividades = {nombres[i]: destinos[i] for i in range(15)}
+            actividades=Actividad.crear_lista_actividades()
         else:
             actividades=cls._actividades
         return actividades
+    
+    @staticmethod
+    def crear_lista_actividades():
+        from gestorAplicacion.tipoActividad import TipoActividad
+        nombres = ["Tour Ciudad", "Aventura Extrema", "Visita Histórica", "Recorrido Gastronómico", "Safari Ecológico", 
+                "Tour Nocturno", "Excursión Acuática", "Escalada de Montaña", "Taller Cultural", "Senderismo"]
+        destinos = ["Cartagena", "Bogotá", "Medellín", "Santa Marta", "San Andrés", "Cali", 
+                    "Parque Nacional Natural Tayrona", "Eje Cafetero", "Salento", "Guatapé"]
+        tipos_actividades = [ [TipoActividad.CULTURALES, TipoActividad.FAMILIARES],[TipoActividad.EXTREMAS,TipoActividad.EXTREMAS],[TipoActividad.CULTURALES,TipoActividad.CULTURALES],
+            [TipoActividad.FAMILIARES, TipoActividad.RESTAURANTE],[TipoActividad.ECOLOGICAS,TipoActividad.ECOLOGICAS],[TipoActividad.ACUATICAS,TipoActividad.ACUATICAS],[TipoActividad.ACUATICAS, TipoActividad.EXTREMAS],
+            [TipoActividad.DEPORTIVAS,TipoActividad.DEPORTIVAS],[TipoActividad.CULTURALES,TipoActividad.CULTURALES],[TipoActividad.ECOLOGICAS, TipoActividad.DEPORTIVAS]]
+        for i in range(10):
+            actividad = Actividad(nombre=nombres[i],destinoNombre=destinos[i],tiposActividad=tipos_actividades[i])
+            actividad.ingresarGuia()
+            actividad.asignarParametros()
+        return Actividad._actividades
             
     def asignarParametros(self):
         capacidad = 0
@@ -195,6 +206,13 @@ class Actividad(Registrable):
     def buscarGuia(self, idioma):
         return [guia for guia in self._guias if idioma in guia.getIdiomas()]
 
+    @staticmethod   
+    def generar_lista_estadisticas():
+        import random
+        estadisticas = ["Grupos eliminados","Reservas canceladas","Bonos regalados"]
+        lista_estadisticas = [(stat, str(random.randint(1, 20))) for stat in estadisticas]
+        return lista_estadisticas
+    
     @staticmethod
     def retirarGuia(guia):
         from gestorAplicacion.destino import Destino
@@ -206,25 +224,32 @@ class Actividad(Registrable):
                     actividad._guias.remove(guia)
 
     @staticmethod
-    def buscarActividad(nombre, destino):
-        from gestorAplicacion.destino import Destino     
-
-        destino_actividad = Destino.buscarNombre(destino)
-        if destino_actividad:
-            for actividad in destino_actividad.getActividades():
-                if nombre == actividad._nombre:
-                    return actividad
+    def buscarActividad(nombre, destino):   
+        actividades=Actividad.mostrarActividades()
+        for actividad in actividades:
+            if (actividad._nombre.lower() == nombre.lower() and
+                actividad._destinoNombre.lower() == destino.lower()):
+                return actividad
         return None
 
-    @staticmethod
-    def retirarActividad(actividad):
+
+    def cancelarActividad(self):
+        resumen=self.retirarActividad()
+        if self._destino:
+            actividades = self._destino.getActividades()
+            actividades.remove(self)
+            self._destino.setActividades(actividades)
+        Actividad._actividades.remove(self)
+        return resumen
+    
+    def retirarActividad(self,fechas=None):
         from gestorAplicacion.grupo import Grupo
-        Grupo.retirarActividad(actividad, None)
-        actividades = actividad._destino.getActividades()
-        actividades.remove(actividad)
-        actividad._destino.setActividades(actividades)
-        actividad = None
-        return True
+        Grupo.retirar_actividad(self, None)
+        resumen=self.toString()
+        if fechas:
+             resumen.append(("Fechas a retirar:",fechas[0]+" - "+fechas[-1]))
+        resumen=resumen+Actividad.generar_lista_estadisticas()
+        return resumen
 
     @staticmethod
     def mostrarClasificacion(indice):
@@ -244,6 +269,9 @@ class Actividad(Registrable):
 
     def set_destino(self, destino):
         self._destino = destino
+    
+    def set_destinoNombre(self,nombre):
+        self._destinoNombre = nombre
 
     def get_tipo(self):
         return self._tipo

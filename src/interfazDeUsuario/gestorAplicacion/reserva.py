@@ -18,6 +18,79 @@ class Reserva:
         self._destino = destino
         Reserva._reservas_existentes.append(self)
 
+    def toString(self):
+        from hotel import Hotel
+        precio = 0
+        if self.clientes[0].get_hotel() is None:
+            precio = self.plan.get_precio() * len(self.clientes) - self.plan.get_precio() * self.clientes[0].get_suscripcion().get_desc_tour() * self.clientes[0].get_suscripcion().get_capacidad()
+            if self.descuento != 0:
+                precio *= self.descuento
+            return [
+                ("Código", str(self.codigo)),
+                ("Titular", str(self.clientes[0])),
+                ("Destino", str(self.destino)),
+                ("Idiomas", ', '.join(str(idioma) for idioma in self.idiomas)),
+                ("Fechas", str(self.fechas)),
+                ("Clasificación", str(self.clasificacion)),
+                ("Tipo de Plan", str(self.tipo_plan)),
+                ("Actividades", str(self.plan.get_actividades())),
+                ("Precio", str(precio)),
+                ("Descuento por Cancelación", str(self.descuento_por_cancelacion))
+            ]
+
+        if self.plan is None:
+            precio = Hotel.calcular_precio(self)
+            if self.descuento != 0:
+                precio *= self.descuento
+            return [
+                ("Hotel", self.clientes[0].get_hotel().get_nombre()),
+                ("Habitación", self.clientes[0].get_grupos()[0].get_tipo_habitacion()),
+                ("Restaurante", self.clientes[0].get_restaurantes()[0].get_nombre()),
+                ("Precio total del hospedaje", str(self.clientes[0].get_hotel().get_precio_final_hospedaje()))
+            ]
+
+        precio = (self.plan.get_precio() * len(self.clientes) - self.plan.get_precio() * self.clientes[0].get_suscripcion().get_desc_tour() * self.clientes[0].get_suscripcion().get_capacidad()) + Hotel.calcular_precio(self)
+        if self.descuento != 0:
+            precio *= self.descuento
+        return [
+            ("Código", str(self.codigo)),
+            ("Titular", str(self.clientes[0])),
+            ("Destino", str(self.destino)),
+            ("Idiomas", ', '.join(str(idioma) for idioma in self.idiomas)),
+            ("Fechas", str(self.fechas)),
+            ("Clasificación", str(self.clasificacion)),
+            ("Tipo de Plan", str(self.tipo_plan)),
+            ("Actividades", str(self.plan.get_actividades())),
+            ("Precio", str(precio)),
+            ("Descuento por Cancelación", str(self.descuento_por_cancelacion)),
+            ("Hotel", self.clientes[0].get_hotel().get_nombre()),
+            ("Habitación", self.clientes[0].get_grupos()[0].get_tipo_habitacion()),
+            ("Restaurante", self.clientes[0].get_restaurantes()[0].get_nombre()),
+            ("Precio total del hospedaje", str(self.clientes[0].get_hotel().get_precio_final_hospedaje()))
+        ]
+
+    def mostrarPlan(self):
+        precio = self.plan.get_precio() * len(self.clientes) - self.plan.get_precio() * self.clientes[0].get_suscripcion().get_desc_tour() * self.clientes[0].get_suscripcion().get_capacidad()
+        if self.descuento != 0:
+            precio *= self.descuento
+        return [
+            ("Clasificación", str(self.clasificacion)),
+            ("Tipo de Plan", str(self.tipo_plan)),
+            ("Actividades", str(self.plan.get_actividades())),
+            ("Precio", str(precio)),
+            ("Descuento por Cancelación", str(self.descuento_por_cancelacion))
+        ]
+
+    def mostrarDatosBasicos(self):
+        nombres_clientes = [cliente.get_nombre() for cliente in self.clientes]
+        return [
+            ("Código", str(self.codigo)),
+            ("Destino", str(self.destino)),
+            ("Idiomas", ', '.join(str(idioma) for idioma in self.idiomas)),
+            ("Fechas", str(self.fechas)),
+            ("Lista de Clientes", ', '.join(nombres_clientes))
+        ]
+
     @staticmethod
     def _incrementar_codigo():
         Reserva._ultimo_codigo += 1
@@ -33,7 +106,7 @@ class Reserva:
     @staticmethod
     def generar_lista_fechas_aleatorias():
         import random
-        cantidad_fechas = random.randint(1, 10)  # Número aleatorio de fechas a generar (entre 1 y 10)
+        cantidad_fechas = random.randint(5, 15)  
         lista_fechas = [Reserva.generar_fecha_aleatoria() for _ in range(cantidad_fechas)]
         return lista_fechas
     
@@ -69,6 +142,21 @@ class Reserva:
                 clasificacion_comun = i
         return clasificacion_comun
 
+    def listaMes(date_str):
+        from datetime import datetime, timedelta
+        date = datetime.strptime(date_str, "%d/%m/%Y")
+        first_day = date.replace(day=1)
+        next_month = first_day.replace(day=28) + timedelta(days=4)  
+        last_day = next_month - timedelta(days=next_month.day)
+        
+        dates = []
+        current_day = first_day
+        while current_day <= last_day:
+            dates.append(current_day.strftime("%d/%m/%Y"))
+            current_day += timedelta(days=1)
+        
+        return dates
+    
     @staticmethod
     def mostrar_cantidad_personas_destino(destino):
         return sum(len(reserva._clientes) for reserva in Reserva._reservas_existentes if reserva._destino == destino)
@@ -108,7 +196,7 @@ class Reserva:
         self._idiomas.append(idioma)
 
     def añadir_cliente(self, nombre, edad):
-        from gestorAplicacion.cliente import Cliente
+        from cliente import Cliente
         cliente = Cliente(nombre, edad)
         self._clientes.append(cliente)
 
@@ -169,7 +257,7 @@ class Reserva:
         return f"{dia}/{mes}/2024"
     
     def verificar_eliminar_reservacion(self, idioma_vrf, fechas_vrf, clientes_vrf):
-        from gestorAplicacion.hotel import Hotel
+        from hotel import Hotel
         vrf = None
         vrf_plan = False
         vrf_hospedaje = False

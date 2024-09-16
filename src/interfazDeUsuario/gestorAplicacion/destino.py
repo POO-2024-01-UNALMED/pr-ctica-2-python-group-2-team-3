@@ -44,9 +44,7 @@ class Destino:
     @staticmethod
     def seleccionarDestinos():
         import random
-        destinos= ["Cartagena", "Bogotá", "Medellín", "Santa Marta", "San Andrés", 
-        "Cali","Parque Nacional Natural Tayrona","Eje Cafetero", "Salento", "Guatapé"]
-
+        destinos=Destino.listaNombres()
         cantidad_destinos = random.randint(1, len(destinos))
         destinos_random = random.sample(destinos, cantidad_destinos)
         return destinos_random

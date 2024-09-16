@@ -1,6 +1,6 @@
 import tkinter as tk
 from excepciones import *
-from excepciones import *
+
 from gestorAplicacion.actividad import Actividad
 from gestorAplicacion.tipoActividad import TipoActividad
 from gestorAplicacion.idioma import Idioma

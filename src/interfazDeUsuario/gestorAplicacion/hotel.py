@@ -1,17 +1,20 @@
 class Hotel:
-    _hoteles_disponibles = []  # Simulación de base de datos en memoria
+    _hoteles_disponibles = [] 
+    Capacidad={"Individual": 1, "Doble": 2, "Familiar": 4, "Suite": 6 } 
 
-    def __init__(self):
-        self._permite_suscripcion = False
-        self._nombre = ""
-        self._destino = None
-        self._numero_habitaciones = 0
-        self._precio = 0.0
-        self._cuenta_con_suscripcion = False
-        self._precio_final_hospedaje = 0.0
-        self._grupos = []
-        self._disponibilidad_habitaciones = {}
-        self._restaurantes = []
+    def __init__(self, nombre, destino, permite_suscripcion=False, numero_habitaciones=0, habitaciones=[],precio=0.0, cuenta_con_suscripcion=False, precio_final_hospedaje=0.0, grupos=[], disponibilidad_habitaciones=[], restaurantes=[]):
+        self._permite_suscripcion = permite_suscripcion
+        self._nombre = nombre
+        self._destino = destino
+        self._habitaciones=habitaciones
+        self._numero_habitaciones = numero_habitaciones
+        self._precio = precio
+        self._cuenta_con_suscripcion = cuenta_con_suscripcion
+        self._precio_final_hospedaje = precio_final_hospedaje
+        self._grupos = grupos 
+        self._disponibilidad_habitaciones = disponibilidad_habitaciones 
+        self._restaurantes = restaurantes 
+        Hotel._hoteles_disponibles.append(self)
 
     @staticmethod
     def asignar_habitacion(reserva, hotel, ingresar_opcion=None):
@@ -138,7 +141,64 @@ class Hotel:
 
         return hotel.get_grupos()
 
+    @classmethod
+    def mostrarHoteles(cls):
+        import random
+        from gestorAplicacion.destino import Destino
+        if cls._hoteles_disponibles is []:
+            destinos = Destino.listaNombres()
+            nombres= ["Hotel del Sol", "Resort Maravilla", "Hotel Encantado", "Palacio Tropical",  "Hotel Bella Vista", "Eco Resort", "Hotel Las Palmas", "Hotel Bahía Serena", 
+                "Hotel El Dorado", "Paraíso Natural", "Hotel La Montaña", "Resort Playa Blanca", "Hotel Jardín del Mar", "Hotel Oasis", "Hotel Sierra Azul"]
+            tipos_comida = [ "Italiana", "China", "Mexicana", "Colombiana", "Japonesa", "Peruana","Mediterránea", "Vegetariana", "Francesa", "India", "Tailandesa"]
+            for i in range(15):
+                destino = destinos[i % len(destinos)]  
+                nombre = nombres[i % len(nombres)]  
+                permite_suscripcion = random.choice([True, False])  
+                precio = round(random.uniform(100000, 1000000), 2) 
+                restaurantes = random.sample(tipos_comida, k=random.randint(1, 3))  
+                habitaciones = {"Individuales": random.randint(5, 20),"Dobles": random.randint(5, 15),"Familiares": random.randint(5, 10),"Suite": random.randint(1, 5)}
+                
+                Hotel(destino=destino,nombre=nombre,permite_suscripcion=permite_suscripcion, habitaciones=habitaciones, precio=precio, restaurantes=restaurantes)
 
+        return cls._hoteles_disponibles
+    
+    @staticmethod
+    def hotelesDisponibles(reserva):
+        hoteles=Hotel.mostrarHoteles()
+        destino=reserva.getDestino().getNombre() if reserva.getDestino() is not None else "Cartagena"
+        hoteles_disponibles=[]
+        for hotel in hoteles:
+            if hotel._destino==destino:
+                hoteles_disponibles.append(hotel._nombre)
+        return hoteles_disponibles
+    
+    @staticmethod
+    def buscarHotel(nombre, destino):
+        hoteles = Hotel.mostrarHoteles()
+        for hotel in hoteles:
+            if hotel._nombre == nombre and hotel._destino==destino:
+                return hotel
+        return None
+    
+    def mostrarAcomodacion(self, personas):
+        habitaciones_hotel = self._habitaciones
+        combinaciones = []
+        def buscar_combinaciones(ocupacion_actual, personas_restantes, combinacion_actual):
+            if personas_restantes == 0:
+                combinaciones.append(combinacion_actual)
+                return
+        
+            for tipo_habitacion, (cantidad_disponible, _) in habitaciones_hotel.items():
+                capacidad = Hotel.Capacidad.get(tipo_habitacion, 0)
+                if capacidad > 0 and cantidad_disponible > 0 and personas_restantes >= capacidad:
+                    nueva_combinacion = combinacion_actual.copy()
+                    nueva_combinacion[tipo_habitacion] = nueva_combinacion.get(tipo_habitacion, 0) + 1
+                    habitaciones_hotel[tipo_habitacion] = (cantidad_disponible - 1, habitaciones_hotel[tipo_habitacion][1])
+                    buscar_combinaciones(ocupacion_actual + capacidad, personas_restantes - capacidad, nueva_combinacion)
+                    habitaciones_hotel[tipo_habitacion] = (cantidad_disponible, habitaciones_hotel[tipo_habitacion][1]) 
+        buscar_combinaciones(0, personas, {})
+        return combinaciones
+        
     @staticmethod
     def calcular_precio(reserva):
         from gestorAplicacion.restaurante import Restaurante
