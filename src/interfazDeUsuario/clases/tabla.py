@@ -79,13 +79,14 @@ class Tabla(tk.Frame):
             self.boton_escoger = tk.Button(self.botones_frame, text=self.eleccion, bg="lightgray", font=("Candara light", 12), command=self._on_eleccion)
             self.boton_escoger.grid(row=0, column=1, padx=5, pady=5, sticky="e")
     
-    def borrarFiltros(self):
+    def borrarFiltros(self,mensaje=True):
         """
         Limpia la lista de filtros seleccionados y reinicia el combobox.
         """
         self.filtros_seleccionados.clear()
         self.filtro_combobox.set("Filtros")
-        messagebox.showinfo("Filtros", "Filtros eliminados con éxito.")
+        if mensaje:
+            messagebox.showinfo("Filtros", "Filtros eliminados con éxito.")
         
     def _on_filtro(self, event=None):
         filtro_seleccionado = self.filtro_combobox.get()
@@ -171,6 +172,7 @@ class Tabla(tk.Frame):
 
         # Resetea el contador de filas al valor correcto después de eliminar las filas
         self.filas = 2
+        
         
 def filtro_seleccionado(filtro):
     print(f"Filtro seleccionado: {filtro}")

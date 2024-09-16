@@ -179,7 +179,7 @@ class FieldFrame(tk.Frame):
             
             elif self.tipo_formulario in [1, 2]:  # Múltiples opciones
                 seleccion = self.getValuesOpciones()
-                if seleccion is None or (self.tipo_formulario == 2 and len(seleccion) != 2):
+                if seleccion is None or (self.tipo_formulario == 2 and len(seleccion) > 2):
                     raise OpcionNoSeleccionadaError()
             
             elif self.tipo_formulario == 3:  # Entradas de texto
@@ -283,6 +283,7 @@ def mostrar_seleccion(seleccion):
     """
     METODO SOLO PARA EJEMPLO
     """
+    print(seleccion)
     messagebox.showinfo("Seleccion", f"Selección: {seleccion}")
 
 # Ejemplo de uso del FieldFrame dentro de la ventana principal

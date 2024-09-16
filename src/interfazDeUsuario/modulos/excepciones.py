@@ -76,9 +76,10 @@ class OpcionNoSeleccionadaError(ErrorFormulario):
 
 class FiltroSeleccionadoError(ErrorFormulario):
     """Error cuando no se selecciona el mismo filtro dos veces"""
-    def __init__(self, filtros):
-        self.mensaje_base = " No puedes elegir el mismo filtro dos veces."
-        super().__init__(f"{self.mensaje_base}\nFiltros seleccionados actualmente: {filtros}")
+    def __init__(self, filtros,mensaje=None):
+        self.mensaje_base = " No puedes elegir el mismo filtro dos veces." 
+        mensajeCompleto=(f"{self.mensaje_base}\nFiltros seleccionados actualmente: {filtros}")if mensaje is None else mensaje
+        super().__init__(mensajeCompleto)
         
 class MaximoDosOpcionesError(ErrorFormulario):
     """Error cuando se seleccionan más de las dos opciones permitidas"""
@@ -141,6 +142,15 @@ class EdadTitularError(ErrorParametros):
         self.edad=edad
         self.mensaje_base = f"El titular no cumple con la edad requerida, debe ser mayor de edad"
         super().__init__(f"{self.mensaje_base}.\nEdad ingresada: {edad} años")
+
+class HabitacionesError(ErrorParametros):
+    """Error cuando se ingreso incorrectamente la cantidad de habitaciones"""
+    def __init__(self,seleccion, mensaje):
+        """:param seleccion:habitaciones seleccionadas
+        :param mensaje:mensaje de especificacion del error"""
+        self.seleccion=seleccion
+        self.mensaje_base = "Se ingreso un número incorrecto de habitaciones."
+        super().__init__(f"{self.mensaje_base} {mensaje}\nHabiitaciones seleccionadas: {seleccion}")
         
         
 """METODOS PARA REALIZAR VERIFICACIONES"""
@@ -155,17 +165,20 @@ def verificarNombre(nombre):
         if not palabra.isalpha():
             raise NombreInvalidoError(nombre)
 
-def verificarNumero(numero):
+def verificarNumero(numero,aplicaCer0=False):
     """
     Verifica que el número ingresado sea un entero mayor a 0.
     
     :param  numero: el número a verificar
+    :param aplicaCer0: booleano True si aplica el cero
     """
     try:
         numero = int(numero)
     except ValueError:
         raise NumeroInvalidoError(numero)
-    if numero <= 0:
+    if aplicaCer0==False and numero <= 0:
+        raise NumeroInvalidoError(numero)
+    elif aplicaCer0==True and numero < 0:
         raise NumeroInvalidoError(numero)
 
 formatos=["Máximo una palabra","Fecha DD/MM/AAAA","Fecha MM/AAAA"]
@@ -192,8 +205,8 @@ def verificarFecha(formato,criterio,fecha):
             if not (1 <= dia <= dias_en_mes[mes - 1]):
                 raise FechaInvalidaError(f"Día inválido para el mes, le recordamos que {meses[mes - 1]} tiene {dias_en_mes[mes - 1]} dias.", fecha)
             
-            if año < 2024:
-                raise FechaInvalidaError("Año inválido, asegurese de ingresar un año que no haya pasado.", fecha)
+            if año != 2024:
+                raise FechaInvalidaError("Año inválido, asegurese de ingresar el año actual.", fecha)
         else:
             raise FormatoInvalidoError(formatos[formato], criterio, fecha)
         
@@ -203,12 +216,12 @@ def verificarFecha(formato,criterio,fecha):
             mes, año = map(int, fecha.split('/'))
             if not (1 <= mes <= 12):
                 raise FechaInvalidaError("Mes inválido, asegurese de ingresar un numero entre 1-12.", fecha)
-            if año < 2024:
-                raise FechaInvalidaError("Año inválido,asegurese de ingresar un año que no haya pasado.", fecha)
+            if año != 2024:
+                raise FechaInvalidaError("Año inválido,asegurese de ingresar el año actual.", fecha)
         else:
             raise FormatoInvalidoError(formatos[formato], criterio, fecha)
 
-def verificarFormato(valor,criterio,formato):
+def verificarFormato(valor,criterio,formato,palabras=None):
         """
         Verifica si las entradas cumplen con el formato especificado.
         
@@ -219,6 +232,12 @@ def verificarFormato(valor,criterio,formato):
                 # Verifica que sea una palabra (sin espacios)
                 if not re.fullmatch(r"^\w+$", valor):
                     raise FormatoInvalidoError(formatos[formato], criterio, valor)
+                if palabras:
+                    coincidencia=False
+                    for palabra in palabras:
+                        if palabra.lower()==valor.lower(): coincidencia=True
+                    if not coincidencia:
+                         raise FormatoInvalidoError(palabras, criterio, valor)
             
         elif formato in [1,2]:
             # Utiliza el método verificarFecha para validar las fechas
@@ -248,7 +267,6 @@ def verificarDestino(nombre):
         :param destino(str): el nombre del destino
     """
     from gestorAplicacion.destino import Destino
-    print(Destino.listaNombres())
     if not any(n.lower() == nombre.lower() for n in Destino.listaNombres()):
         raise ExistenciaEror("El destino", nombre)
 
@@ -268,6 +286,18 @@ def verificarTitular(edad):
         raise NumeroInvalidoError(edad)
     if edad<18:
         raise EdadTitularError(edad)
+    
+def verificarHabitaciones(seleccion,clientes):
+    adultos=0
+    for cliente in clientes:
+        if cliente.getEdad()>=18:
+            adultos+=1
+    totalHabitaciones=int(seleccion["Individual (capacidad 1)"])+int(seleccion["Doble (capacidad 2)"])+int(seleccion["Familiar (capacidad 4)"])+int(seleccion["Suite (capacidad 6)"])
+    if totalHabitaciones>adultos:
+        raise HabitacionesError(seleccion=seleccion,mensaje="Hay mas habitaciones que adultos en la reserva, recuerde que debe haber minimo un adulto por habitación")
+    totalClientes=int(seleccion["Individual (capacidad 1)"])+int(seleccion["Doble (capacidad 2)"])*2+int(seleccion["Familiar (capacidad 4)"])*4+int(seleccion["Suite (capacidad 6)"])*6
+    if totalClientes<len(clientes):
+        raise HabitacionesError(seleccion=seleccion,mensaje="No hay suficientes habitaciones para toda la reserva, verifique bien las capacidades de las habitaciones.")
                   
 """EJEMPLO DE USO"""
 # Ejemplo de cómo lanzar y manejar las excepciones
