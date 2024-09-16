@@ -2,8 +2,8 @@ import sys
 import os
 
 # Ajustar las rutas para las importaciones
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '.')))
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), 'clases')))
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), 'modulos')))
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), 'gestorAplicacion')))
@@ -11,25 +11,17 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), 'gestorA
 
 
 
-from src.gestorAplicacion.cliente import Cliente
-from src.gestorAplicacion.grupo import Grupo
-from src.gestorAplicacion.plan import Plan
-from src.gestorAplicacion.destino import Destino
-from src.gestorAplicacion.tipoActividad import TipoActividad
-from src.gestorAplicacion.actividad import Actividad
-from src.gestorAplicacion.guia import Guia
-from src.gestorAplicacion.idioma import Idioma
-from src.gestorAplicacion.reserva import Reserva
-
-
-
-
-
+from gestorAplicacion.cliente import Cliente
+from gestorAplicacion.grupo import Grupo
+from gestorAplicacion.plan import Plan
+from gestorAplicacion.destino import Destino
+from gestorAplicacion.tipoActividad import TipoActividad
+from gestorAplicacion.actividad import Actividad
+from gestorAplicacion.guia import Guia
+from gestorAplicacion.idioma import Idioma
+from gestorAplicacion.reserva import Reserva
+from gestorAplicacion.tipoActividad import TipoActividad
 from serializador import Serializador
-
-
-
-
 
 # Importar clases
 
