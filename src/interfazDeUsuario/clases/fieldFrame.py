@@ -283,6 +283,7 @@ def mostrar_seleccion(seleccion):
     """
     METODO SOLO PARA EJEMPLO
     """
+    print(seleccion)
     messagebox.showinfo("Seleccion", f"Selección: {seleccion}")
 
 # Ejemplo de uso del FieldFrame dentro de la ventana principal

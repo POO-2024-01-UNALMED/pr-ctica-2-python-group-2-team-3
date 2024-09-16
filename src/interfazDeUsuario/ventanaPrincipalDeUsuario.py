@@ -17,10 +17,10 @@ from clases.tabla import Tabla
 
 # Importar modulos
 from modulos.verOpcionesDeAdministrador import *
-from modulos.reservarActividades import reservarActividades
-from modulos.reservarHospedaje import reservarHospedaje
-from modulos.planearViaje import planearViaje
-from modulos.modificarReserva import modificarReserva
+from modulos.reservarActividades import *
+from modulos.reservarHospedaje import *
+from modulos.planearViaje import *
+from modulos.modificarReserva import *
 
 class VentanaPrincipalDeUsuario(tk.Toplevel):
     """
@@ -41,7 +41,7 @@ class VentanaPrincipalDeUsuario(tk.Toplevel):
         self.iconbitmap("archivos\\perroLogo.ico")
         self.config(bg="white smoke")
         self.resizable(width=False, height=False)
-        self.geometry("1450x800+35+0")
+        self.geometry("1450x8000+35+0")
 
         # Configuración del layout de la ventana principal
         self.columnconfigure(0, weight=1)  # Permite que la columna 0 se expanda
@@ -292,7 +292,7 @@ class VentanaPrincipalDeUsuario(tk.Toplevel):
         habilitado = [False for _ in valores]
         self.resultados_frame.grid(row=5, column=0, sticky="nsew", padx=10)
         self.fieldResultado_frame = FieldFrame(self.resultados_frame, tipo_formulario=3, frame_resultado=True, criterios=criterios, tituloCriterios="Criterios", tituloValores="Valores:",  valores=valores, habilitado=habilitado )
-        self.fieldResultado_frame.pack(padx=10, pady=5)
+        self.fieldResultado_frame.pack(padx=10)
         self.fieldResultado_frame.config(bd=5, relief="ridge", highlightbackground="lightGray")
 
     def añadirResultado(self, criterio, valor):
@@ -347,6 +347,9 @@ class VentanaPrincipalDeUsuario(tk.Toplevel):
     
     def borrarFilas(self):
         self.tabla_frame.borrarFilas()
+    
+    def borrarFiltros(self):
+        self.tabla_frame.borrarFiltros(False)
     
     def frameImagen(self):
         self.imagen_frame = tk.Frame(self.procesosYConsultas_frame, bg="white smoke")

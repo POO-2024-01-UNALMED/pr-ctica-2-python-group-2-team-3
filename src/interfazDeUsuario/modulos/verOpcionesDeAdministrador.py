@@ -143,7 +143,7 @@ def retirarGuia(ventana_usuario, opcion=0, seleccion=None):
         ventana_usuario.crearFormulario( tipo_formulario=3, on_accept=lambda seleccion: retirarGuia(ventana_usuario, 2, seleccion), criterios=["Nombre", "Edad", "Destino"], verificaciones=excepcionesRetirarGuia0)
 
     elif opcion == 2:  # Paso 2: Retirar guía
-        ventana_usuario.guia = Guia.buscarGuia(seleccion)
+        ventana_usuario.guia = Guia.buscarGuia(seleccion["Nombre"],seleccion["Edad"],seleccion["Destino"])
         if ventana_usuario.tipo_retiro == "Dar de baja a un guía por un periodo de tiempo":
             excepcionesRetirarGuia1 = [
                 ("Cantidad de días", lambda seleccion: verificarNumero(seleccion)),
@@ -160,7 +160,7 @@ def retirarGuia(ventana_usuario, opcion=0, seleccion=None):
             ventana_usuario.texto = "despedido el guía"
         elif ventana_usuario.tipo_retiro == "Dar de baja a un guía por un periodo de tiempo":
             periodo_tiempo = Reserva.mostrarDias(int(seleccion["Cantidad de días"]),seleccion["Fecha de inicio"])
-            resumen=ventana_usuario.guia.retirarGuiaDespido(periodo_tiempo)
+            resumen=ventana_usuario.guia.retirarGuia(periodo_tiempo)
             ventana_usuario.texto = "retirado por un tiempo al guía"
         
         ventana_usuario.borrarResultados("___________ Resumen del proceso realizado___________")
@@ -168,6 +168,13 @@ def retirarGuia(ventana_usuario, opcion=0, seleccion=None):
         ventana_usuario.frameResumen(lista=resumen, metodoSalida=lambda: opcionesAdministrador(ventana_usuario))
  
 def verDisponibilidadGuias(ventana_usuario,opcion=0,seleccion=None):
+    """
+    Muestra la disponibilidad de los guias en tablas según filtros y fechas
+    
+    :param ventana_usuario: La ventana actual de usuario donde se realizan las operaciones.
+    :param opcion: Paso actual del proceso (0: seleccionar tipo de retiro, 1: ingresar guía, 2: retirar guía, 3: finalizar proceso).
+    :param seleccion: Datos seleccionados o ingresados por el usuario en el formulario.
+    """
     textoBase=["Actualmente se encuentra en la ventana de ver la disponibilidad de los guias.\n",
             " Aqui podras ver y filtrar la informacion de todos los guias registrados en la empresa.\n\n"]
     
@@ -188,11 +195,15 @@ def verDisponibilidadGuias(ventana_usuario,opcion=0,seleccion=None):
         
     if opcion == 1: # Paso 1: Elegir tabla
         ventana_usuario.opcion=seleccion
+        ventana_usuario.tituloResultados()
+        ventana_usuario.frameResultados(criterios=["Tipo de tabla seleccionada:"], valores=[seleccion])
+        
         ventana_usuario.modificarTexto("".join(textoBase) + "Elija el filtro de fecha con el cual quiere filtrar la información:")
         ventana_usuario.crearFormulario( tipo_formulario=0, on_accept=lambda seleccion: verDisponibilidadGuias(ventana_usuario, 2, seleccion), tituloValores="¿Como desea buscar?",  valores=["Buscar según el mes","Buscar según el mes y el dia"])
 
     if opcion == 2: # Paso 2: Ingresar fecha
         ventana_usuario.opcionFecha=seleccion
+        ventana_usuario.añadirResultado("Filtro de fecha seleccionado:", seleccion)
         formato=1 if ventana_usuario.opcionFecha=="Buscar según el mes y el dia" else 2
         excepcionesVerDisponibilidadGuia1 = [
                 ("Fecha", lambda seleccion: verificarFormato(seleccion, "Fecha", formato))]
@@ -201,7 +212,9 @@ def verDisponibilidadGuias(ventana_usuario,opcion=0,seleccion=None):
         ventana_usuario.crearFormulario( tipo_formulario=3,  on_accept=lambda seleccion:  verDisponibilidadGuias(ventana_usuario, 3, seleccion), criterios=["Fecha"], verificaciones=excepcionesVerDisponibilidadGuia1)
         
     if opcion == 3: # Paso 3: Ingresar guia, destino o idioma(si es necesario)
-        ventana_usuario.fecha=seleccion
+        ventana_usuario.fecha=seleccion["Fecha"] if ventana_usuario.opcionFecha=="Buscar según el mes y el dia" else "1/"+seleccion["Fecha"]
+        ventana_usuario.añadirResultado("Fecha:", seleccion["Fecha"])
+        
         if ventana_usuario.opcion=="Ver el itinerario de un guía en específico":
             excepcionesVerDisponibilidadGuia0 = [
             ("Nombre", lambda seleccion: verificarNombre(seleccion)),
@@ -224,18 +237,21 @@ def verDisponibilidadGuias(ventana_usuario,opcion=0,seleccion=None):
            verDisponibilidadGuias(ventana_usuario, 4, seleccion)
     
     if opcion == 4: # Paso 4: mostrar tabla
+        ventana_usuario.guia=None
+        ventana_usuario.destino=None
+        ventana_usuario.idioma=None
         if seleccion:
             if ventana_usuario.opcion=="Ver el itinerario de un guía en específico":
-                ventana_usuario.guia=GuiabuscarGuia(seleccion)
+                ventana_usuario.guia=seleccion["Nombre"]
+                ventana_usuario.destino=seleccion["Destino"]
             elif ventana_usuario.opcion=="Ver la disponibilidad de todos los guías según el destino":
-                ventana_usuario.destino=GuiabuscarGuia(seleccion)
+                ventana_usuario.destino=seleccion
             elif ventana_usuario.opcion=="Ver la disponibilidad de todos los guías según el idioma":
-                ventana_usuario.idioma=GuiabuscarGuia(seleccion)
-        filtros=[]
-        ventana_usuario.modificarTexto("".join(textoBase) + "Actualmente estas viendo la tabla de disponibilidad de los guias registrados, aqui podras filtrar la tabla con\n"
-                                       "el menu de filtros que se encuentra en la esquina izquierda, ten en cuenta que los filtros se acomulan y si quieres borrarlos solo debes\n"
-                                       "oprimir el boton de borrar filtros, si deseas salir o ver otro tipo de tabla debes oprimir el boton de salir")
-        mostrarTabla(ventana_usuario,filtros)
+                ventana_usuario.idioma=seleccion
+        
+        ventana_usuario.modificarTexto("Actualmente estas viendo la tabla de disponibilidad de guias, puedes filtrar la tabla con el menu de filtros que se encuentra en la esquina izquierda,\n"
+                                       "para borrar el filtro oprime el boton de borrar filtros, para salir o ver otro tipo de tabla oprime el boton de salir")
+        mostrarTabla(ventana_usuario)
     
     if opcion == 5: # Paso 5 :cambiar tabla
         ventana_usuario.modificarTexto("".join(textoBase) + "Ahora puedes elegir entre ver otro tipo de tabla o salir:")
@@ -272,7 +288,7 @@ def ingresarActividad(ventana_usuario,opcion=0,seleccion=None):
         ventana_usuario.crearFormulario(tipo_formulario=3, on_accept=lambda seleccion: ingresarActividad(ventana_usuario, 1, seleccion),criterios=["Nombre"], verificaciones=excepcionesIngresarActividad)
 
     elif opcion == 1:  # Paso 1: Ingresar destino
-        ventana_usuario.nombre=(seleccion["Nombre"])
+        ventana_usuario.actividad=Actividad(nombre=seleccion["Nombre"])
         
         ventana_usuario.tituloResultados()
         ventana_usuario.frameResultados(criterios=["Nombre"], valores=[seleccion["Nombre"]])
@@ -281,20 +297,20 @@ def ingresarActividad(ventana_usuario,opcion=0,seleccion=None):
         ventana_usuario.crearFormulario(tipo_formulario=0, on_accept=lambda seleccion: ingresarActividad(ventana_usuario, 2, seleccion),tituloValores="Seleccione el destino", valores=ListaDestinos)
 
     elif opcion == 2:  # Paso 2:Ingresar tipos
-        ventana_usuario.actividad=Actividad(ventana_usuario.nombre,seleccion)
+        ventana_usuario.actividad.set_destinoNombre(seleccion)
         
         ventana_usuario.añadirResultado("Destino", seleccion)
         ventana_usuario.modificarTexto("".join(textoBase)+"Ahora ingrese los tipos de actividad que mejor representen a la actividad, elija máximo 2 opciones:")
         ventana_usuario.crearFormulario(tipo_formulario=2, on_accept=lambda seleccion: ingresarActividad(ventana_usuario, 3, seleccion), tituloValores="Seleccione los tipos de actividad",  valores=ListaTipoActividad)
 
     elif opcion == 3:  # Paso 3: Seleccionar destino
-        ventana_usuario.actividad = actividadingresarTipoActividades(ventana_usuario.actividad, seleccion)
-        ventana_usuario.actividad=actividadIngresarGuia(ventana_usuario.actividad)
-        ventana_usuario.actividad = actividadasignarParametros(ventana_usuario.actividad)
+        ventana_usuario.actividad.ingresarTipoActividades(seleccion)
+        ventana_usuario.actividad.ingresarGuia()
+        ventana_usuario.actividad.asignarParametros()
         
         ventana_usuario.borrarResultados("___________ Resumen de la información de la actividad___________")
         ventana_usuario.modificarTexto(textoBase[0]+ "\n🎉🎉Terminaste de ingresar la actividad🎉🎉\n\nAquí podrás ver el resumen de tu ingreso. Esperamos haber sido de utilidad 😊")
-        ventana_usuario.frameResumen( lista=ventana_usuario.actividad, metodoSalida=lambda: opcionesAdministrador(ventana_usuario))
+        ventana_usuario.frameResumen( lista=ventana_usuario.actividad.toString(), metodoSalida=lambda: opcionesAdministrador(ventana_usuario))
 
 
 def cancelarActividad(ventana_usuario,opcion=0,seleccion=None):
@@ -335,7 +351,7 @@ def cancelarActividad(ventana_usuario,opcion=0,seleccion=None):
         ventana_usuario.crearFormulario( tipo_formulario=3, on_accept=lambda seleccion: cancelarActividad(ventana_usuario, 2, seleccion), criterios=["Nombre", "Destino"], verificaciones=excepcionesCancelarActividad0)
 
     elif opcion == 2:  # Paso 2: Ingresar periodo de tiempo
-        ventana_usuario.actividad = ActividadbuscarActividad(seleccion)
+        ventana_usuario.actividad=Actividad.buscarActividad(seleccion["Nombre"],seleccion["Destino"])
         if ventana_usuario.tipo_retiro == "Suspender una actividad por un periodo de tiempo":
             excepcionesCancelarActividad1 = [
                 ("Cantidad de días", lambda seleccion: verificarNumero(seleccion)),
@@ -348,16 +364,16 @@ def cancelarActividad(ventana_usuario,opcion=0,seleccion=None):
     
     elif opcion == 3:  # Paso 3: Cancelar actividad
         if ventana_usuario.tipo_retiro == "Cancelar definitivamente una actividad":
-            ventana_usuario.resumen = actividadCancelar()
+            resumen = ventana_usuario.actividad.cancelarActividad()
             ventana_usuario.texto = "eliminado la actividad"
         elif ventana_usuario.tipo_retiro == "Suspender una actividad por un periodo de tiempo":
-            periodo_tiempo = mostrarDias(seleccion)
-            ventana_usuario.resumen = actividadSuspender(periodo_tiempo)
+            periodo_tiempo = Reserva.mostrarDias(int(seleccion["Cantidad de días"]),seleccion["Fecha de inicio"])
+            resumen = ventana_usuario.actividad.retirarActividad(periodo_tiempo)
             ventana_usuario.texto = "suspendido la actividad"
         
         ventana_usuario.borrarResultados("___________ Resumen del proceso realizado___________")
         ventana_usuario.modificarTexto( textoBase[0] + "\n🥳¡Felicidades! Se ha " + ventana_usuario.texto + " con éxito🥳\n\nAquí podrás ver el resumen de la cancelación. Esperamos haber sido de utilidad 😊")
-        ventana_usuario.frameResumen(lista=ventana_usuario.resumen, metodoSalida=lambda: opcionesAdministrador(ventana_usuario))
+        ventana_usuario.frameResumen(lista=resumen, metodoSalida=lambda: opcionesAdministrador(ventana_usuario))
 
 #-----------------------------------------------------------------------------------------------------
 # ----------------------------------------------------------------------------------------------------
@@ -365,50 +381,105 @@ def cancelarActividad(ventana_usuario,opcion=0,seleccion=None):
 # -------------------------------------------METODOS EXTRA--------------------------------------------
 #-----------------------------------------------------------------------------------------------------
 #-----------------------------------------------------------------------------------------------------
-def mostrarTabla(ventana_usuario,filtros):
+def mostrarTabla(ventana_usuario):
+    """
+    Muestra la tabla por primera vez, crea la tabla y según las opciones esogidas elige el encabezado y los titulos de las columnas
+    
+    :param ventana_usuario: La ventana actual de usuario donde se realizan las operaciones.
+    """
     filtrosVerDisponibilidadGuias = [
         "Disponibilidad de todos los guías",
         "Solo los guías disponibles",
         "Solo los guías ocupados"]
     
-    tabla=GuiamostrarDisponibilidadGuias(ventana_usuario.fecha,filtros)
-    opcion=0 if ventana_usuario=="Ver la disponibilidad de todos los guías según la fecha" else 1 if ventana_usuario=="Ver la disponibilidad de todos los guías según el destino" else 2 if ventana_usuario=="Ver la disponibilidad de todos los guías según el idioma" else 3
-    if ventana_usuario.opcionFecha=="Buscar según el mes y el dia":
+    
+    tabla=Guia.mostrarDisponibilidadGuias(ventana_usuario.fecha,ventana_usuario.destino,ventana_usuario.idioma,ventana_usuario.guia,filtros="Solo los guías disponibles")
+    
+    opcion=0 if ventana_usuario.opcion=="Ver la disponibilidad de todos los guías según la fecha" else 1 if ventana_usuario.opcion=="Ver la disponibilidad de todos los guías según el destino" else 2 if ventana_usuario.opcion=="Ver la disponibilidad de todos los guías según el idioma" else 3
+    if ventana_usuario.opcionFecha=="Buscar según el mes":
         encabezados = [
-            [ ["Tabla fecha"],["Mes:"]],
-            [["Destino:"],["Cantidad de guias:","Cantidad de actividades"],["Mes:"]],
-            [["Idioma:"],["Cantidad de guias:","Cantidad de personas"],["Mes:"]],
-            [["Guia:","Destino:"],["Mes"]]]
+            [ ["Tabla fecha"],["Mes: "+tabla["Mes"]]],
+            
+            [["Destino: "+tabla["Destino"]],["Cantidad de guias: "+str(20),"Cantidad de actividades: "+tabla["Actividades"]],["Mes: "+tabla["Mes"]]],
+            
+            [["Idioma: "+tabla["Idioma"]],["Cantidad de guias: "+str(20),"Cantidad de personas: "+tabla["Personas"]],["Mes: "+tabla["Mes"]]],
+            
+            [["Guia: "+tabla["Nombre"],"Destino: "+tabla["Destino"]],["Mes: "+tabla["Mes"]]]]
         tituloColumnas=[
-            ["Dia","Guias disponibles:","Guias ocupados:","Actividades con guia:","Destino mas usado:","Idioma mas usado:"],
-            ["Dia","Guias disponibles:","Guias ocupados:","Actividades con guia:","Actividades sin guia:","Cantidad de personas:"],
-            ["Dia","Guias disponibles:","Guias ocupados:","Actividades reservadas:","Grupos:","Destino común:"],
-            ["Dia:","Estado","Actividad","Idioma","Cantidad Clientes"]]
-        cuerpo=[
-            [tabla[1], tabla[2], tabla[3], tabla[4], tabla[5], tabla[6]],
-            [tabla[1], tabla[2], tabla[3], tabla[4], tabla[5], tabla[6]],
-            [tabla[1], tabla[2], tabla[3], tabla[4], tabla[5], tabla[6]],
-            [tabla[1], tabla[2], tabla[3], tabla[4], tabla[5]]]
+            ["Dia","Guias disponibles","Guias ocupados","Actividades con guia","Destino mas usado","Idioma mas usado"],
+            ["Dia","Guias disponibles","Guias ocupados","Actividades con guia","Actividades sin guia","Cantidad de personas"],
+            ["Dia","Guias disponibles","Guias ocupados","Actividades reservadas","Grupos","Destino común"],
+            ["Dia","Estado","Actividad","Idioma","Cantidad Clientes"]]
             
     else:
         encabezados=[
-            [["Tabla fecha"],["Mes:","Dia:"],["Guias disponibles:","Guias ocupados:","Actividades con guia:","Destino mas usado:","Idioma mas usado:"]],                  
-            [["Destino:"],["Cantidad de guias:","Cantidad de actividades"],["Mes:","Dia"],["Guias disponibles:","Guias ocupados:","Actividades con guia:","Actividades sin guia:","Idioma mas usado:"]],
-            [["Idioma:"],["Cantidad de guias:","Cantidad de personas"],["Mes:","Dia"],["Guias disponibles:","Guias ocupados:","Actividades reservadas:","Grupos:","Destino común:"]],
-            [["Guia:","Destino:"],["Mes"]]]
+            [["Tabla fecha"],["Mes: "+tabla["Mes"],"Dia: "+tabla["Dia"]],["Guias: "+str(len(Guia.mostrarGuias())),"Guias ocupados: "+tabla["Guias"],"Actividades con guia: "+tabla["Actividades"],"Destino mas usado: "+tabla["Destino"],"Idioma mas usado: "+tabla["Idioma"]]],                  
+           
+            [["Destino: "+tabla["Destino"]],["Cantidad de guias: "+str(len(Guia.mostrarGuias())),"Cantidad de actividades: "+tabla["Actividades"]],["Mes: "+tabla["Mes"],"Dia: "+tabla["Dia"]],["Guias disponibles: "+tabla["Guias"],"Guias ocupados: "+tabla["Guias"],"Actividades con guia: "+tabla["Actividades"],"Actividades sin guia: "+tabla["Actividades"],"Idioma mas usado: "+tabla["Idioma"]]],
+            
+            [["Idioma: "+tabla["Idioma"]],["Cantidad de guias: "+str(len(Guia.mostrarGuias())),"Cantidad de personas: "+tabla["Personas"]],["Mes: "+tabla["Mes"],"Dia: "+tabla["Dia"]],["Guias disponibles: "+tabla["Guias"],"Guias ocupados: "+tabla["Guias"],"Actividades reservadas: "+tabla["Actividades"],"Grupos: "+tabla["Guias"],"Destino común: "+tabla["Destino"]]],
+            
+            [["Guia: "+tabla["Nombre"],"Destino: "+tabla["Destino"]],["Mes: "+tabla["Mes"]]]]
         tituloColumnas=[
             ["Guia","Estado","Actividad","Destino","Idioma"],
             ["Guia","Estado","Actividad","Idioma","Cantidad Clientes"],
             ["Guia","Estado","Actividad","Destino","Cantidad Clientes"],
             ["Dia:","Estado","Actividad","Idioma","Cantidad Clientes"]]
-        cuerpo=[
-            [tabla[1], tabla[2], tabla[3], tabla[4], tabla[5]],
-            [tabla[1], tabla[2], tabla[3], tabla[4], tabla[5]],
-            [tabla[1], tabla[2], tabla[3], tabla[4], tabla[5]],
-            [tabla[1], tabla[2], tabla[3], tabla[4], tabla[5]]]
         
     ventana_usuario.crearTabla(encabezado=encabezados[opcion], titulo_columnas=tituloColumnas[opcion], filtros=filtrosVerDisponibilidadGuias, on_filtro=lambda filtros:filtrarTabla(ventana_usuario,filtros), eleccion="Salir", on_eleccion=lambda: verDisponibilidadGuias(ventana_usuario, 5))
+    mostrarCuerpo(ventana_usuario,opcion)
+    
+def mostrarCuerpo(ventana_usuario,opcion,filtros=None):
+    """
+    Añade todas las filas del cuerpo de la tabla según las opciones seleccionas y la información de los guias
+    
+    :param ventana_usuario: La ventana actual de usuario donde se realizan las operaciones.
+    :param filtros= El filtro que se eligio en la tabla(si no aplica es None)
+    """
+    if  ventana_usuario.opcionFecha=="Buscar según el mes":
+        fechas=Reserva.listaMes(ventana_usuario.fecha)
+        conteo=0
+        for fecha in fechas:
+            conteo+=1
+            tabla=Guia.mostrarDisponibilidadGuias(fecha,ventana_usuario.destino,ventana_usuario.idioma,ventana_usuario.guia,filtros)
+            ocupados=str(20-int(tabla["Guias"])) if filtros is None or filtros=="Disponibilidad de todos los guías" else tabla["Guias"]
+            cuerpo=[
+            [tabla["Dia"], tabla["Guias"], ocupados, tabla["Actividades"], tabla["Destino"], tabla["Idioma"]],
+            [tabla["Dia"], tabla["Guias"], ocupados, tabla["Actividades"], tabla["Actividades"], tabla["Personas"]],
+            [tabla["Dia"], tabla["Guias"], ocupados, tabla["Actividades"], tabla["Guias"], tabla["Destino"]],
+            [tabla["Dia"], tabla["Estado"], tabla["Actividad"], tabla["Idioma"], tabla["Personas"]]]
+            ventana_usuario.añadirFila(cuerpo[opcion])
+            maximo=13 if opcion==0 else 12
+            if conteo==maximo: break
+    else :
+        guias=Guia.mostrarGuias()
+        if opcion==3:
+            tabla=Guia.mostrarDisponibilidadGuias(ventana_usuario.fecha,ventana_usuario.destino,ventana_usuario.idioma,ventana_usuario.guia)
+            ventana_usuario.añadirFila([tabla["Dia"], tabla["Estado"], tabla["Actividad"], tabla["Idioma"], tabla["Personas"]])
+        for guia in guias:
+            tabla=Guia.mostrarDisponibilidadGuias(ventana_usuario.fecha,guia.getDestinoNombre(),ventana_usuario.idioma,guia.getNombre(),filtros)
+            cuerpo=[
+            [tabla["Nombre"], tabla["Estado"], tabla["Actividad"], tabla["Destino"], tabla["Idioma"]],
+            [tabla["Nombre"], tabla["Estado"], tabla["Actividad"], tabla["Idioma"], tabla["Personas"]],
+            [tabla["Nombre"], tabla["Estado"], tabla["Actividad"], tabla["Destino"], tabla["Personas"]]]
+            ventana_usuario.añadirFila(cuerpo[opcion])
     
 
 def filtrarTabla(ventana_usuario,filtros):
-    ventana_usuario.borrarFilas()
+    """
+    Es el metodo controlador de la barra de filtros de la tabla, se encarga de cambiar la tabla si se cambia de filtro.
+    
+    :param ventana_usuario: La ventana actual de usuario donde se realizan las operaciones.
+    :param filtros: El filtro elegido
+    """
+    try:
+        if ventana_usuario.opcion=="Ver el itinerario de un guía en específico":
+            raise FiltroSeleccionadoError(mensaje="Actualmente estas viendo la tabla del intinerario de un único guia, no puedes filtrar por guías",filtros=filtros)
+        else:
+            opcion=0 if ventana_usuario.opcion=="Ver la disponibilidad de todos los guías según la fecha" else 1 if ventana_usuario.opcion=="Ver la disponibilidad de todos los guías según el destino" else 2 if ventana_usuario.opcion=="Ver la disponibilidad de todos los guías según el idioma" else 3
+            ventana_usuario.borrarFiltros()
+            ventana_usuario.borrarFilas()
+            mostrarCuerpo(ventana_usuario,opcion,filtros)
+    except ErrorAplicacion as e:
+            messagebox.showerror("Error", str(e))
+        
