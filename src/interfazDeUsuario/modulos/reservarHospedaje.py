@@ -5,6 +5,17 @@ from modulos.reservarActividades import realizarReserva,comprarSuscripcion
 
 from gestorAplicacion.hotel import Hotel
 
+def funreservarHospedaje(ventana_usuario):
+        """
+        Destruye la interfaz de procesos actual y modifica el título de la ventana para iniciar el proceso de planear un viaje.
+
+        :param ventana_usuario: Objeto que representa la ventana del usuario.
+        :type ventana_usuario: VentanaUsuario
+        """
+        ventana_usuario.destruirInterfazProcesos()
+        ventana_usuario.modificarTitulo("Reservar hospedaje")
+        reservarHospedaje(ventana_usuario)
+        
 def reservarHospedaje(ventana_usuario, opcion=0, seleccion=None):
         textoBase=["Actualmente se encuentra en la ventana de reservar hospedaje. Aqui podras,",
             "\nreservar tu hotel, elegir un buffet y hacer reservas en restaurantes si asi lo deseas.\n\n"]
@@ -21,7 +32,7 @@ def reservarHospedaje(ventana_usuario, opcion=0, seleccion=None):
         if opcion == 1: # Paso 1: Realizar reserva
                 if opcion =="Buscar reserva existente para agregar las actividades":
                         excepcionesReservarActividades1 = [
-                        ("Codigo", lambda seleccion: verificarCodigo(seleccion))]
+                        ("Codigo", lambda seleccion: verificarCodigoNone(seleccion))]
                         
                         ventana_usuario.modificarTexto("".join(textoBase)+"Empecemos ingresando el codigo de tu reserva, recuerda que es el codigo que te dieron al realizar tu reserva:")
                         ventana_usuario.crearFormulario(tipo_formulario=3, on_accept=lambda seleccion: reservarHospedaje(ventana_usuario, 2, seleccion),criterios=["Codigo"], verificaciones=excepcionesReservarActividades1)

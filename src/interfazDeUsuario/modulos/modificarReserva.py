@@ -1,6 +1,11 @@
 from clases.fieldFrame import FieldFrame
 from modulos.excepciones import *
 
+def funModificarReserva(ventana_usuario):
+        ventana_usuario.destruirInterfazProcesos()
+        ventana_usuario.modificarTitulo("Modificar reserva")
+        modificarReserva(ventana_usuario)
+        
 def modificarReserva(ventana_usuario, opcion=0, opcionEscogidaAdmin=None):
         # Muestra la ventana para modificar reserva
         ventana_usuario.destruirInterfazProcesos()
