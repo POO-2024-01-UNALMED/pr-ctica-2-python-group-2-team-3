@@ -19,7 +19,7 @@ class Suscripcion:
         
         if titular:
             Suscripcion._lista_clientes.append(titular)
-            titular.set_suscripcion(self)
+            titular.setSuscripcion(self)
         if fechas:
             self.asignar_fecha_vencimiento(fechas)
                 
