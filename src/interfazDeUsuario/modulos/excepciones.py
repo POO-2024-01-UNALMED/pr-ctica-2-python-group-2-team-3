@@ -284,7 +284,7 @@ def verificarTitular(edad):
         verificarNumero(edad)
     except ErrorAplicacion as e:
         raise NumeroInvalidoError(edad)
-    if edad<18:
+    if int(edad)<18:
         raise EdadTitularError(edad)
 
 def verificarHabitaciones(seleccion,clientes,habitacionesHotel):
