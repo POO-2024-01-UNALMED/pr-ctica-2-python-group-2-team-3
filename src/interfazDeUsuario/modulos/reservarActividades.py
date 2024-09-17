@@ -44,7 +44,6 @@ def reservarActividades(ventana_usuario, opcion=0, seleccion=None):
             ventana_usuario.crearFormulario( tipo_formulario=3, on_accept=lambda seleccion: reservarActividades(ventana_usuario, 2, seleccion),  criterios=["Código"], verificaciones=excepcionesReservarActividades1)
         else:
             ventana_usuario.reserva = realizarReserva(ventana_usuario=ventana_usuario, textobase=textoBase[0])
-            print("ventana Usuario reserva: AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" + ventana_usuario.reserva)
             reservarActividades(ventana_usuario, 2, seleccion)
 
     if opcion == 2: # Paso 2: Elegir plan de actividades y terminar procesos
