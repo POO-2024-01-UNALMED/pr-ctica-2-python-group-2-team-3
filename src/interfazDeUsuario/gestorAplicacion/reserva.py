@@ -238,7 +238,7 @@ class Reserva:
     @staticmethod
     def buscar_reserva(codigo):
         for reserva in Reserva._reservas_existentes:
-            if codigo == reserva.get_codigo():
+            if codigo == reserva._codigo:
                 return reserva
         return None
 

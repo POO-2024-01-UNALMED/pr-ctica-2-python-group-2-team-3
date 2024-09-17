@@ -24,7 +24,7 @@ def reservarActividades(ventana_usuario, opcion=0, seleccion=None):
         "Actualmente se encuentra en la ventana de reservar actividades turísticas.",
         "Aquí podrás registrar tu reserva,\ncomprar una suscripción y elegir un plan personalizado de actividades o un paquete turístico ya planeado.\n\n"]
     
-    ventana_usuario.destruirInterfazProcesos()
+    ventana_usuario.destruirInterfazProcesos()  # Elimina los elementos de la interfaz de procesos      
 
     if opcion == 0:  # Paso 0: Ingresar opción de reserva
         opcionesReservarActividades = [
@@ -34,7 +34,7 @@ def reservarActividades(ventana_usuario, opcion=0, seleccion=None):
         ventana_usuario.modificarTexto( "".join(textoBase) +"Empecemos eligiendo su tipo de reserva, si ya tienes una reserva creada anteriormente y quieres añadirle un plan de actividades\npuedes buscar tu reserva anterior con el código que te dieron, pero si no tienes ninguna reserva creada no te preocupes, acá podrás crear tu reserva desde cero 😊:")
         ventana_usuario.crearFormulario( tipo_formulario=0, on_accept=lambda seleccion: reservarActividades(ventana_usuario, 1, seleccion), tituloValores="¿Qué desea hacer?",valores=opcionesReservarActividades)
 
-    if opcion == 1:# Paso 1: Buscar o crear la reserva
+    if opcion == 1: # Paso 1: Buscar o crear la reserva
         ventana_usuario.reserva = None
         if seleccion == "Buscar reserva existente para agregar las actividades":
             excepcionesReservarActividades1 = [
@@ -44,11 +44,11 @@ def reservarActividades(ventana_usuario, opcion=0, seleccion=None):
             ventana_usuario.crearFormulario( tipo_formulario=3, on_accept=lambda seleccion: reservarActividades(ventana_usuario, 2, seleccion),  criterios=["Código"], verificaciones=excepcionesReservarActividades1)
         else:
             ventana_usuario.reserva = realizarReserva(ventana_usuario=ventana_usuario, textobase=textoBase[0])
-            reservarActividades(ventana_usuario, 2, seleccion)
+            reservarActividades(ventana_usuario, 2)
 
     if opcion == 2: # Paso 2: Elegir plan de actividades y terminar procesos
         if seleccion:
-            ventana_usuario.reserva = Reserva.buscar_reserva(seleccion["Código"])
+            ventana_usuario.reserva = Reserva.buscar_reserva(int(seleccion["Código"]))
         
         elegirPlanTuristico(ventana_usuario)
         ventana_usuario.borrarResultados("___________ Resumen de la reserva realizada___________")
