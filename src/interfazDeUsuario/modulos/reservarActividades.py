@@ -1,4 +1,5 @@
 import tkinter as tk
+from tkinter import messagebox
 from excepciones import *
 
 from gestorAplicacion.actividad import Actividad
@@ -35,15 +36,16 @@ def reservarActividades(ventana_usuario, opcion=0, seleccion=None):
         ventana_usuario.crearFormulario( tipo_formulario=0, on_accept=lambda seleccion: reservarActividades(ventana_usuario, 1, seleccion), tituloValores="¿Qué desea hacer?",valores=opcionesReservarActividades)
 
     if opcion == 1: # Paso 1: Buscar o crear la reserva
-        ventana_usuario.reserva = None
+        #ventana_usuario.reserva = None
         if seleccion == "Buscar reserva existente para agregar las actividades":
             excepcionesReservarActividades1 = [
                 ("Código", lambda seleccion: verificarCodigo(seleccion))]
             
             ventana_usuario.modificarTexto( "".join(textoBase) + "Empecemos ingresando el código de tu reserva, recuerda que es el código que te dieron al realizar tu reserva:")
             ventana_usuario.crearFormulario( tipo_formulario=3, on_accept=lambda seleccion: reservarActividades(ventana_usuario, 2, seleccion),  criterios=["Código"], verificaciones=excepcionesReservarActividades1)
-        else:
-            ventana_usuario.reserva = realizarReserva(ventana_usuario=ventana_usuario, textobase=textoBase[0])
+        elif seleccion == "Realizar una nueva reserva":
+            print("Realizando nueva reserva")
+            ventana_usuario.reserva = realizarReserva(ventana_usuario=ventana_usuario, opcion=0, seleccion=None, textobase=textoBase[0])
             reservarActividades(ventana_usuario, 2)
 
     if opcion == 2: # Paso 2: Elegir plan de actividades y terminar procesos
@@ -91,7 +93,7 @@ def realizarReserva(ventana_usuario, opcion=0, seleccion=None, textobase=None):
 
     if opcion == 2: #Paso 2: Verificación de suscripción y creación del titular.
         ventana_usuario.titular = Suscripcion.verificar_suscripcion(seleccion["Nombre"], seleccion["Edad"], ventana_usuario.fechas)
-        ventana_usuario.añadirResultado(criterio=["Nombre del titular:", "Edad del titular:"], valor=[seleccion["Nombre"], seleccion["Edad"]])
+        ventana_usuario.añadirResultado(criterio=["Nombre del titular", "Edad del titular"], valor=[seleccion["Nombre"], seleccion["Edad"]])
         
         if ventana_usuario.titular is None:
             ventana_usuario.titular = Cliente(nombre=seleccion["Nombre"], edad=seleccion["Edad"])
