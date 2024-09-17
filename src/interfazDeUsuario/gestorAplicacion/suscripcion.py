@@ -1,3 +1,5 @@
+from datetime import datetime, timedelta
+
 class Suscripcion:
     _lista_clientes = []
     _lista_tipos = ["Básica", "General", "Premium", "VIP"]
@@ -11,14 +13,16 @@ class Suscripcion:
         self._desc_tour = desc_tour
         self._desc_hotel = desc_hotel
         
+        self.asignar_precio()
+        self.asignar_descuentos()
+        self.asignar_capacidad()
+        
         if titular:
             Suscripcion._lista_clientes.append(titular)
-            if fechas:
-                self.asignar_precio()
-                self.asignar_descuentos()
-                self.asignar_capacidad()
-                self.asignar_fecha_vencimiento(fechas)
-                titular.set_suscripcion(self)
+            titular.set_suscripcion(self)
+        if fechas:
+            self.asignar_fecha_vencimiento(fechas)
+                
 
     @staticmethod
     def verificar_suscripcion(nombre, edad, lista_fechas):
@@ -111,8 +115,10 @@ class Suscripcion:
         return fechas[-1]"""
 
     def asignar_fecha_vencimiento(self, fechas):
-        ultima_fecha = fechas[-1]
-        self._fecha_vencimiento = [ultima_fecha[0], ultima_fecha[1], ultima_fecha[2] + 2]
+        ultima_fecha = fechas[-1]  
+        ultima_fecha = datetime.strptime(ultima_fecha, "%d/%m/%Y")
+        vencimiento = ultima_fecha + timedelta(days=365 * 2)
+        self.set_vencimiento(vencimiento.strftime("%d/%m/%Y"))
 
     @staticmethod
     def mostrar_posibles_suscripciones():

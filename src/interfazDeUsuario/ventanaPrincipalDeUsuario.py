@@ -21,7 +21,7 @@ from modulos.verOpcionesDeAdministrador import *
 from modulos.reservarActividades import *
 from modulos.reservarHospedaje import *
 from modulos.planearViaje import *
-from modulos.modificarReserva import *
+#from modulos.modificarReserva import *
 
 
 
