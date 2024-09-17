@@ -10,7 +10,17 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), 'modulos
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), 'gestorAplicacion')))
 directorio_actual = os.path.dirname(os.path.abspath(__file__))
 # Importar clases 
-from src.interfazDeUsuario import *
+from clases.menu import Menu
+from clases.pdfViewer import PdfViewer
+from clases.fieldFrame import FieldFrame
+from clases.tabla import Tabla
+
+# Importar modulos
+from modulos.verOpcionesDeAdministrador import *
+#from modulos.reservarActividades import *
+#from modulos.reservarHospedaje import *
+from modulos.planearViaje import *
+from modulos.modificarReserva import *
 
 
 
