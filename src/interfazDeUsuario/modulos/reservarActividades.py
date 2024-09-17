@@ -43,6 +43,7 @@ def reservarActividades(ventana_usuario, opcion=0, seleccion=None):
             ventana_usuario.crearFormulario( tipo_formulario=3, on_accept=lambda seleccion: reservarActividades(ventana_usuario, 2, seleccion),  criterios=["Código"], verificaciones=excepcionesReservarActividades1)
         else:
             ventana_usuario.reserva = realizarReserva(ventana_usuario=ventana_usuario, textobase=textoBase[0])
+            print("ventana Usuario reserva: AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" + ventana_usuario.reserva)
             reservarActividades(ventana_usuario, 2, seleccion)
 
     if opcion == 2: # Paso 2: Elegir plan de actividades y terminar procesos
@@ -103,21 +104,26 @@ def realizarReserva(ventana_usuario, opcion=0, seleccion=None, textobase=None):
     if opcion == 3: #Paso 3: Elección de suscripción o confirmación sin suscripción.
         
         if seleccion:
-            ventana_usuario.suscripcion = comprarSuscripcion(ventana_usuario, seleccion=seleccion)
+            ventana_usuario.suscripcion  = comprarSuscripcion(ventana_usuario, seleccion=seleccion)
+            ventana_usuario.titular.setSuscripcion(ventana_usuario.suscripcion)
+
         else: #Caso en el que el cliente ya tiene una suscripción
-            ventana_usuario.suscripcion = ventana_usuario.titular.getSuscripcion()
+            ventana_usuario.titular.setSuscripcion = ventana_usuario.titular.getSuscripcion()
+            
         
-        ventana_usuario.frameResultados(criterios=["Suscripción:"], valores=[ventana_usuario.suscripcion.get_tipo() if ventana_usuario.suscripcion is not None else "No se aplicará una suscripción a la reserva"])
+        ventana_usuario.frameResultados(criterios=["Suscripción:"], valores=[ventana_usuario.titular.getSuscripcion().get_tipo() if ventana_usuario.titular.getSuscripcion() is not None else "No se aplicará una suscripción a la reserva"])
         
         excepcionesReservarActividades2 = [
             ("Cantidad de clientes", lambda seleccion: verificarNumero(seleccion))]
         
+        
+
+
+
+    if opcion == 4: #Paso 4: Ingreso de cantidad de clientes.
         ventana_usuario.reserva = Reserva()
         ventana_usuario.modificarTexto( "".join(ventana_usuario.texto_base) +  "Ingrese la cantidad de clientes que van a reservar, sin contar al titular:")
         ventana_usuario.crearFormulario( tipo_formulario=3, on_accept=lambda seleccion: realizarReserva(ventana_usuario, 4, seleccion), criterios=["Cantidad de clientes"], verificaciones=excepcionesReservarActividades2 )
-
-    if opcion == 4: #Paso 4: Ingreso de cantidad de clientes.
-        print(ventana_usuario.titular.getSuscripcion())
         ventana_usuario.cantidadClientes = int(seleccion)
         realizarReserva(ventana_usuario, 5)
 
@@ -160,39 +166,35 @@ def comprarSuscripcion(ventana_usuario, opcion=0, seleccion=None):
     :return: Objeto nuevaSuscripcion.
     """
     suscripcionesDisponibles = Suscripcion.get_lista_tipos()
-    nuevaSuscripcion = ""
+    nuevaSuscripcion1 = None  # Initialize the variable
 
-    
-    """if opcion == 0: # Preguntar si se quiere comprar una suscripción
-        ventana_usuario.modificarTexto( "".join(ventana_usuario.texto_base) +  "Actualmente no cuenta con una suscripción con nosotros, elija cómo quiere proceder con su reserva:")
-        ventana_usuario.crearFormulario( tipo_formulario=0, on_accept=lambda seleccion: comprarSuscripcion(ventana_usuario, 1, seleccion),  tituloValores="¿Desea comprar una suscripción para recibir descuentos impresionantes para su reserva?", valores=["Sí, quiero comprar", "No, gracias"])
-    """
-    if opcion == 0: #Escoger la suscripción o salir de la compra
-            if seleccion == "No, gracias":
-                    return None
-            else:
-                ventana_usuario.modificarTexto( "".join(ventana_usuario.texto_base) +  "Genial, puedes escoger entre estas opciones de suscripciones:")
-                ventana_usuario.crearFormulario( tipo_formulario=0, on_accept=lambda seleccion: comprarSuscripcion(ventana_usuario, 1, seleccion),  tituloValores="¿Desea comprar una suscripción para recibir descuentos impresionantes para su reserva?", valores=suscripcionesDisponibles)
-        
-    if opcion == 1: # Crear objeto suscripcion
-        nuevaSuscripcion = None
-        if seleccion == "Básica":
-            nuevaSuscripcion = Suscripcion(tipo=seleccion, titular=ventana_usuario.titular, fechas=ventana_usuario.fechas)
-            return nuevaSuscripcion
-        elif seleccion == "General":
-            nuevaSuscripcion = Suscripcion(tipo=seleccion, titular=ventana_usuario.titular, fechas=ventana_usuario.fechas)
-            return nuevaSuscripcion
-        elif seleccion == "Premium":
-            nuevaSuscripcion = Suscripcion(tipo=seleccion, titular=ventana_usuario.titular, fechas=ventana_usuario.fechas)
-            return nuevaSuscripcion
-        elif seleccion == "VIP":
-            nuevaSuscripcion = Suscripcion(tipo=seleccion, titular=ventana_usuario.titular, fechas=ventana_usuario.fechas)
-            return nuevaSuscripcion
-        else:
-            print("no se ha selecciona una suscripcion valida")
+    if opcion == 0:  # Escoger la suscripción o salir de la compra
+        if seleccion == "No, gracias":
             return None
-    
-    return nuevaSuscripcion
+        else:
+            ventana_usuario.modificarTexto("".join(ventana_usuario.texto_base) + "Genial, puedes escoger entre estas opciones de suscripciones:")
+            ventana_usuario.crearFormulario(tipo_formulario=0, on_accept=lambda seleccion: comprarSuscripcion(ventana_usuario, 1, seleccion), tituloValores="¿Desea comprar una suscripción para recibir descuentos impresionantes para su reserva?", valores=suscripcionesDisponibles)
+
+    elif opcion == 1:  # Crear objeto suscripcion
+        if seleccion == "Básica":
+            nuevaSuscripcion1 = Suscripcion(tipo=seleccion, titular=ventana_usuario.titular, fechas=ventana_usuario.fechas)
+            print("Se ha creado una suscripcion basica")
+        elif seleccion == "General":
+            nuevaSuscripcion1 = Suscripcion(tipo=seleccion, titular=ventana_usuario.titular, fechas=ventana_usuario.fechas)
+            print("Se ha creado una suscripcion general")
+        elif seleccion == "Premium":
+            nuevaSuscripcion1 = Suscripcion(tipo=seleccion, titular=ventana_usuario.titular, fechas=ventana_usuario.fechas)
+            print("Se ha creado una suscripcion premium")
+        elif seleccion == "VIP":
+            nuevaSuscripcion1 = Suscripcion(tipo=seleccion, titular=ventana_usuario.titular, fechas=ventana_usuario.fechas)
+            print("Se ha creado una suscripcion VIP")
+        else:
+            print("No se ha seleccionado una suscripción válida")
+            return None
+
+    return nuevaSuscripcion1
+        
+
 
 
 def elegirPlanTuristico(ventana_usuario, opcion=0, seleccion=None):
