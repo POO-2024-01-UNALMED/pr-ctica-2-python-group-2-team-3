@@ -200,6 +200,26 @@ class Destino:
         tabla.extend([posicion0, posicion1, posicion2, posicion3, posicion4, posicion5])
         return tabla
 
+    @staticmethod
+    def mostrarTablas(idioma=None, tipo=None, hotel=None, clasificacion=None, filtros=None):
+        from gestorAplicacion.idioma import Idioma
+        from gestorAplicacion.tipoActividad import TipoActividad
+        from gestorAplicacion.hotel import Hotel
+        import random
+        idiomas=Idioma.listaNombres()
+        tipos=TipoActividad.listaNombres()
+        disponibilidad = ["Alta","Normal","Baja"]
+        restaurantes = [ "Italiana", "China", "Mexicana", "Colombiana", "Japonesa", "Peruana","Mediterránea", "Vegetariana", "Francesa", "India", "Tailandesa"]
+        suscripcion=["Aplica","No aplica"]   
+        clasificacion=["años<7","7<años13","13<años<18","18<años"]
+        lista_tuplas = {
+            "Idioma":idioma if idioma else random.choice(idiomas),
+            "Tipo":tipo if tipo else random.choice(tipos),
+            "Clasificacion":clasificacion if clasificacion else random.choice(clasificacion),"Disponibilidad":random.choice(disponibilidad),"Restaurantes":random.choice(restaurantes),
+            "Suscripcion":random.choice(suscripcion),"Precios":"$"+str(random.randint(100000, 500000)),
+            "Personas":str(random.randint(1, 100)),"Objetos":str(random.randint(1, 20)),"Capacidad":str(random.randint(1, 6))}
+        return lista_tuplas
+    
     def mostrarPlaneacionDestino(self, opc_busqueda, clasificacion, tipo, fecha, idioma):
         from gestorAplicacion.tipoActividad import TipoActividad
         from gestorAplicacion.reserva import Reserva

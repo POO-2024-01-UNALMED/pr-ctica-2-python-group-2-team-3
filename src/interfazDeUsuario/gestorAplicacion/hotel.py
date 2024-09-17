@@ -19,7 +19,7 @@ class Hotel:
     @staticmethod
     def asignar_habitacion(reserva, hotel, ingresar_opcion=None):
         from gestorAplicacion.grupo import Grupo
-        lista_hoteles = Hotel._hoteles_disponibles
+        lista_hoteles = Hotel._hoteles_disponibles()
         if hotel._permite_suscripcion and reserva.get_existe_suscripcion():
             hotel._cuenta_con_suscripcion = True
 
@@ -145,23 +145,28 @@ class Hotel:
     def mostrarHoteles(cls):
         import random
         from gestorAplicacion.destino import Destino
+        nombres= ["Hotel del Sol", "Resort Maravilla", "Hotel Encantado", "Palacio Tropical",  "Hotel Bella Vista", "Eco Resort", "Hotel Las Palmas", "Hotel Bahía Serena", 
+                "Hotel El Dorado", "Paraíso Natural", "Hotel La Montaña", "Resort Playa Blanca", "Hotel Jardín del Mar", "Hotel Oasis", "Hotel Sierra Azul"]
         if cls._hoteles_disponibles is []:
             destinos = Destino.listaNombres()
-            nombres= ["Hotel del Sol", "Resort Maravilla", "Hotel Encantado", "Palacio Tropical",  "Hotel Bella Vista", "Eco Resort", "Hotel Las Palmas", "Hotel Bahía Serena", 
-                "Hotel El Dorado", "Paraíso Natural", "Hotel La Montaña", "Resort Playa Blanca", "Hotel Jardín del Mar", "Hotel Oasis", "Hotel Sierra Azul"]
             tipos_comida = [ "Italiana", "China", "Mexicana", "Colombiana", "Japonesa", "Peruana","Mediterránea", "Vegetariana", "Francesa", "India", "Tailandesa"]
             for i in range(15):
                 destino = destinos[i % len(destinos)]  
                 nombre = nombres[i % len(nombres)]  
                 permite_suscripcion = random.choice([True, False])  
-                precio = round(random.uniform(100000, 1000000), 2) 
+                precio = round(random.uniform(50000, 200000), 2) 
                 restaurantes = random.sample(tipos_comida, k=random.randint(1, 3))  
                 habitaciones = {"Individuales": random.randint(5, 20),"Dobles": random.randint(5, 15),"Familiares": random.randint(5, 10),"Suite": random.randint(1, 5)}
                 
                 Hotel(destino=destino,nombre=nombre,permite_suscripcion=permite_suscripcion, habitaciones=habitaciones, precio=precio, restaurantes=restaurantes)
 
-        return cls._hoteles_disponibles
+        return nombres
     
+    @classmethod
+    def buscarHotelNombre(cls,nombre):
+        for hotel in cls._hoteles_disponibles:
+            if hotel.get_nombre() == nombre:
+                return hotel
     @staticmethod
     def hotelesDisponibles(reserva):
         hoteles=Hotel.mostrarHoteles()
@@ -171,6 +176,18 @@ class Hotel:
             if hotel._destino==destino:
                 hoteles_disponibles.append(hotel._nombre)
         return hoteles_disponibles
+    
+    def elegirHabitaciones(self,seleccion):
+        individuales=int(seleccion["Individual (capacidad 1)"])
+        dobles=int(seleccion["Doble (capacidad 2)"])
+        familiares=int(seleccion["Familiar (capacidad 4)"])
+        suits=int(seleccion["Suite (capacidad 6)"])
+        
+        self._habitaciones["Individuales"]-=individuales
+        self._habitaciones["Dobles"]-=dobles
+        self._habitaciones["Familiares"]-=familiares
+        self._habitaciones["Suit"]-=suits
+         
     
     @staticmethod
     def buscarHotel(nombre, destino):
@@ -274,11 +291,11 @@ class Hotel:
     def set_destino(self, destino):
         self._destino = destino
 
-    def get_numero_habitaciones(self):
-        return self._numero_habitaciones
+    def get_habitaciones(self):
+        return self._habitaciones
 
-    def set_numero_habitaciones(self, numero_habitaciones):
-        self._numero_habitaciones = numero_habitaciones
+    def set_habitaciones(self, numero_habitaciones):
+        self._habitacioneshabitaciones = numero_habitaciones
 
     def get_precio(self):
         return self._precio

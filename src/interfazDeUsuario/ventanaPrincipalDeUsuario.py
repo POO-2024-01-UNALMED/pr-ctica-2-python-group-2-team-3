@@ -9,7 +9,6 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), 'clases'
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), 'modulos')))
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), 'gestorAplicacion')))
 directorio_actual = os.path.dirname(os.path.abspath(__file__))
-
 # Importar clases 
 from clases.menu import Menu
 from clases.pdfViewer import PdfViewer
@@ -22,8 +21,6 @@ from modulos.reservarActividades import *
 from modulos.reservarHospedaje import *
 from modulos.planearViaje import *
 from modulos.modificarReserva import *
-
-
 
 class VentanaPrincipalDeUsuario(tk.Toplevel):
     """
@@ -165,11 +162,11 @@ class VentanaPrincipalDeUsuario(tk.Toplevel):
         elif option == "Reservar actividades turísticas":
             reservarActividades(self)
         elif option == "Reservar hospedaje":
-            reservarHospedaje(self)
+            funreservarHospedaje(self)
         elif option == "Planear tu viaje":
-            planearViaje(self)
+            funPlanearViaje(self)
         elif option == "Modificar reserva":
-            modificarReserva(self)
+            funModificarReserva(self)
         elif option == "Ver opciones de administrador":
             opcionesAdministrador(self)
         elif option == "Acerca de":

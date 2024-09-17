@@ -1,25 +1,26 @@
-from datetime import datetime, timedelta
+
 class Reserva:
     _ultimo_codigo = 0
     _reservas_existentes = []
 
-    def __init__(self, cliente=None, fechas=None, idioma=None, destino=None, clasificacion=0, tipo_plan='', existe_suscripcion=False, plan=None, its_planeacion=True):
+    def __init__(self, cliente=None, fechas=None, idioma=None, destino=None,destinoNombre=None, clasificacion=0, tipo_plan='', existe_suscripcion=False, plan=None, its_planeacion=True):
         self._codigo = self._incrementar_codigo()
         self._clientes = [cliente] if cliente else []
         self._idiomas = [idioma] if idioma else []
         self._fechas = fechas if fechas else []
         self._clasificacion = clasificacion
         self._tipo_plan = tipo_plan
+        self._destinoNombre=destinoNombre
         self._existe_suscripcion = existe_suscripcion
         self._plan = plan
+        self._paquete_turistico=None
         self._its_planeacion = its_planeacion
         self._descuento_por_cancelacion = ''
         self._descuento = 0
-        self._destino = destino
         Reserva._reservas_existentes.append(self)
 
     def toString(self):
-        from hotel import Hotel
+        from gestorAplicacion.hotel import Hotel
         precio = 0
         if self.clientes[0].get_hotel() is None:
             precio = self.plan.get_precio() * len(self.clientes) - self.plan.get_precio() * self.clientes[0].get_suscripcion().get_desc_tour() * self.clientes[0].get_suscripcion().get_capacidad()
@@ -100,7 +101,7 @@ class Reserva:
     def mostrarDias(cantidad_dias, fecha_inicio_str):
         from datetime import datetime, timedelta
         fecha_inicio = datetime.strptime(fecha_inicio_str, "%d/%m/%Y")
-        lista_fechas = [(fecha_inicio + timedelta(days=i)).strftime("%d/%m/%Y") for i in range(int(cantidad_dias))]
+        lista_fechas = [(fecha_inicio + timedelta(days=i)).strftime("%d/%m/%Y") for i in range(cantidad_dias)]
         return lista_fechas
     
     @staticmethod
@@ -196,7 +197,7 @@ class Reserva:
         self._idiomas.append(idioma)
 
     def añadir_cliente(self, nombre, edad):
-        from cliente import Cliente
+        from gestorAplicacion.cliente import Cliente
         cliente = Cliente(nombre, edad)
         self._clientes.append(cliente)
 
@@ -236,9 +237,9 @@ class Reserva:
             self._clientes[0].get_hotel().eliminar_reservacion(self._clientes)
 
     @staticmethod
-    def buscar_reserva(codigo):
+    def buscar_reserva(grupo, clientes):
         for reserva in Reserva._reservas_existentes:
-            if codigo == reserva._codigo:
+            if reserva._clientes == clientes and grupo in reserva._plan.get_grupos():
                 return reserva
         return None
 
@@ -257,7 +258,7 @@ class Reserva:
         return f"{dia}/{mes}/2024"
     
     def verificar_eliminar_reservacion(self, idioma_vrf, fechas_vrf, clientes_vrf):
-        from hotel import Hotel
+        from gestorAplicacion.hotel import Hotel
         vrf = None
         vrf_plan = False
         vrf_hospedaje = False
@@ -278,11 +279,68 @@ class Reserva:
 
         return vrf
 
+    def definirPrecio(self):
+        from gestorAplicacion.hotel import Hotel
+        lista_paquete = self._paquete_turistico.split('precio: $')
+        precio_paquete=float(lista_paquete[1])
+        cantidad_paquete=self._paquete_turistico.split('cantidad de personas: ')
+        capacidad=int(cantidad_paquete[1].split(',')[0])
+        hotel=Hotel.buscarHotelNombre(self._hotel)
+        precioHotel=hotel.get_precio() if hotel is not None else 80000
+        n=1
+        cantidadClientes=self.get_cantidadClientes()
+        while True:
+            personas=capacidad-cantidadClientes
+            if personas<=0:
+                break
+            else:
+                capacidad=personas
+                n+=1
+        self._precio=(precio_paquete*n)+(precioHotel*cantidadClientes)
 
+    def encontrarCodigo(codigo):
+            import random
+            from datetime import datetime, timedelta
+            from gestorAplicacion.destino import Destino
+            from gestorAplicacion.idioma import Idioma
+            from gestorAplicacion.hotel import Hotel
+            paquetes = [
+                "Tour 5 Cascadas", "Expedición al Amazonas", "Tour por Cascadas", "Aventura en la Playa", "Recorrido artístico", "Naturaleza y Descanso",
+                "Escapada Romántica", "Exploración Urbana", "Ruta del Café", "Safari Fotográfico", "Senderismo en Montañas", "Crucero de Lujo",
+                "Tour Gastronómico", "Descubre las Islas", "Aventura Extrema"
+                ]
+            destino = random.choice(Destino.listaNombres())
+            fecha_inicio = datetime.now()
+            fecha_fin = fecha_inicio + timedelta(days=random.randint(1, 15))
+            fechas = [fecha_inicio.strftime("%Y-%m-%d"), fecha_fin.strftime("%Y-%m-%d")]
+            idiomas = random.choice(Idioma.listaNombres())
+            paquete_turistico = random.choice(paquetes)
+            hotel = random.choice(Hotel.mostrarHoteles())
+            cantidad_clientes = random.randint(1,64)
+            precio = round(random.uniform(200000, 1000000), 2)
+            codigo = random.randint(100, 999)
+
+            return Reserva(destinoNombre=destino, fechas=fechas, idioma=idiomas, paquete_turistico=paquete_turistico, hotel=hotel, cantidad_clientes=cantidad_clientes, precio=precio, codigo=codigo)
+
+    def resumenViaje(self):
+        return[("Destino",self._destinoNombre),
+               ("Fechas",self._fechas[0]+"-"+self._fechas[-1]),
+               ("Idioma",self._idiomas),
+               ("Paquete turistico",self._paquete_turistico.split("=")[0]),
+               ("Hotel", self._hotel),
+               ("Cantidad de clientes",str(self._cantidad_clientes)),
+               ("Precio Final",str(self._precio)),
+               ("Codigo",str(self._codigo))]
 # Métodos de acceso
     @staticmethod
     def get_reservas_existentes():
         return Reserva._reservas_existentes
+    
+    def  set_cantidadClientes(self, cantidad):
+        self._cantidad_clientes = cantidad
+        
+    def get_cantidadClientes(self):
+        return self._cantidad_clientes
 
     @staticmethod
     def set_reservas_existentes(reservas_existentes):
@@ -339,9 +397,33 @@ class Reserva:
     def get_clientes(self):
         return self._clientes
 
+    def set_destinoNombre(self,nombre):
+        self._destinoNombre = nombre
+        
+    def get_destinoNombre(self):
+        return self._destinoNombre
+    
     def set_clientes(self, clientes):
         self._clientes = clientes
+        
+    def get_paquete_turistico(self):
+        return self._paquete_turistico
+    
+    def set_paquete_turistico(self,paquete):
+        self._paquete_turistico=paquete
 
+    def set_hotel(self,hotel):
+        self._hotel=hotel
+        
+    def get_hotel(self):
+        return  self._hotel
+
+    def set_precio(self,precio):
+        self._precio=precio
+        
+    def get_precio(self):
+        return self._precio
+    
     def añadir_reserva(self):
         Reserva._reservas_existentes.append(self)
 

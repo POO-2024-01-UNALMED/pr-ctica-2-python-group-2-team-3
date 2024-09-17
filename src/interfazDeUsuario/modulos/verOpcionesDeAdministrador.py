@@ -1,6 +1,5 @@
 import tkinter as tk
-from excepciones import *
-from tkinter import messagebox
+from modulos.excepciones import *
 
 from gestorAplicacion.actividad import Actividad
 from gestorAplicacion.tipoActividad import TipoActividad
@@ -59,7 +58,7 @@ def ingresarGuia(ventana_usuario, opcion=0, seleccion=None):
     
     ventana_usuario.borrarFrame(ventana_usuario.procesosYConsultas_frame)
 
-    if opcion == 0:  # Paso 0:Ingresar nombre y edad
+    if opcion == 0:  # Paso 0:Ingresar nombre y edad 
         excepcionesIngresarGuia = [
             ("Nombre", lambda seleccion: verificarNombre(seleccion)),
             ("Edad", lambda seleccion: verificarNumero(seleccion)) ]

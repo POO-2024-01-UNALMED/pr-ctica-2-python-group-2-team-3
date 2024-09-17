@@ -1,5 +1,3 @@
-from datetime import datetime, timedelta
-
 class Suscripcion:
     _lista_clientes = []
     _lista_tipos = ["Básica", "General", "Premium", "VIP"]
@@ -13,16 +11,18 @@ class Suscripcion:
         self._desc_tour = desc_tour
         self._desc_hotel = desc_hotel
         
-        self.asignar_precio()
-        self.asignar_descuentos()
-        self.asignar_capacidad()
-        
         if titular:
             Suscripcion._lista_clientes.append(titular)
-            titular.setSuscripcion(self)
-        if fechas:
-            self.asignar_fecha_vencimiento(fechas)
-                
+            if fechas:
+                self.asignar_precio()
+                self.asignar_descuentos()
+                self.asignar_capacidad()
+                self.asignar_fecha_vencimiento(fechas)
+                titular.set_suscripcion(self)
+
+    @staticmethod
+    def ultima_fecha_reserva(fechas):
+        return fechas[-1]
 
     @staticmethod
     def verificar_suscripcion(nombre, edad, lista_fechas):
@@ -109,16 +109,10 @@ class Suscripcion:
         elif tipo == "VIP":
             return 8
         return 0
-    
-    """@staticmethod
-    def ultima_fecha_reserva(fechas):
-        return fechas[-1]"""
 
     def asignar_fecha_vencimiento(self, fechas):
-        ultima_fecha = fechas[-1]  
-        ultima_fecha = datetime.strptime(ultima_fecha, "%d/%m/%Y")
-        vencimiento = ultima_fecha + timedelta(days=365 * 2)
-        self.set_vencimiento(vencimiento.strftime("%d/%m/%Y"))
+        ultima_fecha = Suscripcion.ultima_fecha_reserva(fechas)
+        self._fecha_vencimiento = [ultima_fecha[0], ultima_fecha[1], ultima_fecha[2] + 2]
 
     @staticmethod
     def mostrar_posibles_suscripciones():
@@ -127,7 +121,6 @@ class Suscripcion:
             texto = f"Tipo: {tipo}\nPrecio: {Suscripcion.precio_por_tipo(tipo)}\nDescuentos: {Suscripcion.descuentos_por_tipo(tipo)}\nCapacidad: {Suscripcion.capacidad_por_tipo(tipo)}"
             posibles_suscripciones.append(texto)
         return posibles_suscripciones
-    
 
     def verificar_fecha_vencimiento(self, ultima_fecha):
         if self._fecha_vencimiento[2] < ultima_fecha[2]:

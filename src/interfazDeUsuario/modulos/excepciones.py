@@ -1,5 +1,5 @@
-import re
 import tkinter as tk
+import re
 from tkinter import messagebox
 
 """EXCEPCIONES PERSONALIZADAS"""
@@ -271,24 +271,23 @@ def verificarDestino(nombre):
         raise ExistenciaEror("El destino", nombre)
 
 
-def verificarCodigo(codigo):
+def verificarCodigoNone(codigo):
     """
         Verifica si se ingreso un objeto codigo existente.
         :param codigo: el numero del codigo
     """
-    from gestorAplicacion.reserva import Reserva
-    if Reserva.buscar_reserva(int(codigo)) is None:
-            raise ExistenciaEror("El codigo",codigo)
+    if codigo=="None":
+            raise  ExistenciaEror("El codigo",codigo)
 
 def verificarTitular(edad):
     try:
         verificarNumero(edad)
     except ErrorAplicacion as e:
         raise NumeroInvalidoError(edad)
-    if int(edad)<18:
+    if edad<18:
         raise EdadTitularError(edad)
-    
-def verificarHabitaciones(seleccion,clientes):
+
+def verificarHabitaciones(seleccion,clientes,habitacionesHotel):
     adultos=0
     for cliente in clientes:
         if cliente.getEdad()>=18:
@@ -299,6 +298,8 @@ def verificarHabitaciones(seleccion,clientes):
     totalClientes=int(seleccion["Individual (capacidad 1)"])+int(seleccion["Doble (capacidad 2)"])*2+int(seleccion["Familiar (capacidad 4)"])*4+int(seleccion["Suite (capacidad 6)"])*6
     if totalClientes<len(clientes):
         raise HabitacionesError(seleccion=seleccion,mensaje="No hay suficientes habitaciones para toda la reserva, verifique bien las capacidades de las habitaciones.")
+    if habitacionesHotel["Individuales"]<int(seleccion["Individual (capacidad 1)"]) or habitacionesHotel["Dobles"]<int(seleccion["Doble (capacidad 2)"]) or  habitacionesHotel["Familiares"]<int(seleccion["Familiar (capacidad 4)"]) or  habitacionesHotel["Suite"]<int(seleccion["Suite (capacidad 6)"]):
+        raise HabitacionesError(seleccion=seleccion,mensaje="No hay suficientes habitaciones en el hotel del tipo escogido")
                   
 """EJEMPLO DE USO"""
 # Ejemplo de cómo lanzar y manejar las excepciones
@@ -334,7 +335,7 @@ if __name__ == "__main__":
     """
 #Ejemplo de uso de los metodos
     try:
-        verificarFecha(1,"fecha","5/20/2024")  
+        verificarFecha(1,"fecha","5/2/2024")  
     except (FechaInvalidaError,FormatoInvalidoError) as e:
        messagebox.showerror("Error", str(e))
 

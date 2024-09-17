@@ -165,6 +165,22 @@ class Plan:
             ("Actividades", ", ".join([str(actividad.getNombre()) for actividad in plan._actividades])),
             ("Precio por persona", str(plan._precio))]
 
+    @staticmethod
+    def generar_paquetes_turisticos():
+        import random
+        nombres_paquetes = ["Tour 5 Cascadas", "Expedición al Amazonas", "Tour por Cascadas",
+            "Aventura en la Playa", "Recorrido artistico", "Naturaleza y Descanso", "Escapada Romántica", "Exploración Urbana", "Ruta del Café", 
+            "Safari Fotográfico", "Senderismo en Montañas", "Crucero de Lujo", "Tour Gastronómico", "Descubre las Islas", "Aventura Extrema", ]
+        
+        paquetes = []
+        for nombre in nombres_paquetes:
+            personas = random.randint(1, 6)  
+            precio = round(random.uniform(100000, 1000000), 2)  
+
+            paquete = f"{nombre}, cantidad de personas: {personas}, precio: ${precio}"
+            paquetes.append(paquete)
+        
+        return paquetes
 
     # Métodos de acceso
     @staticmethod

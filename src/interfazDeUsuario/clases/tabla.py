@@ -1,6 +1,5 @@
-import os
 import sys
-
+import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 import tkinter as tk
@@ -85,7 +84,6 @@ class Tabla(tk.Frame):
         Limpia la lista de filtros seleccionados y reinicia el combobox.
         """
         self.filtros_seleccionados.clear()
-        self.filtro_combobox.set("Filtros")
         if mensaje:
             messagebox.showinfo("Filtros", "Filtros eliminados con éxito.")
         
