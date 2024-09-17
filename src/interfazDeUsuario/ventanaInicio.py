@@ -21,11 +21,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), 'gestorA
 from ventanaPrincipalDeUsuario import VentanaPrincipalDeUsuario
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '.')))
 
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), 'clases')))
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), 'modulos')))
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), 'gestorAplicacion')))
 directorio_actual = os.path.dirname(os.path.abspath(__file__))
 
 class VentanaInicio(tk.Tk):
