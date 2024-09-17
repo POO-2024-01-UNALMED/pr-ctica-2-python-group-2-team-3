@@ -12,6 +12,7 @@ from gestorAplicacion.cliente import Cliente
 from gestorAplicacion.suscripcion import Suscripcion
 from gestorAplicacion.grupo import Grupo
 
+
 def reservarActividades(ventana_usuario, opcion=0, seleccion=None):
     """
     Gestiona el proceso de reserva de actividades turísticas.
@@ -20,7 +21,7 @@ def reservarActividades(ventana_usuario, opcion=0, seleccion=None):
     :param opcion (int, optional): Indica el paso del proceso de reserva. Default es 0.
     :param seleccion (dict, optional): Datos seleccionados por el usuario en cada paso.
     """
-    
+    global reserva_global
     textoBase = [
         "Actualmente se encuentra en la ventana de reservar actividades turísticas.",
         "Aquí podrás registrar tu reserva,\ncomprar una suscripción y elegir un plan personalizado de actividades o un paquete turístico ya planeado.\n\n"]
@@ -36,27 +37,29 @@ def reservarActividades(ventana_usuario, opcion=0, seleccion=None):
         ventana_usuario.crearFormulario( tipo_formulario=0, on_accept=lambda seleccion: reservarActividades(ventana_usuario, 1, seleccion), tituloValores="¿Qué desea hacer?",valores=opcionesReservarActividades)
 
     if opcion == 1: # Paso 1: Buscar o crear la reserva
-        #ventana_usuario.reserva = None
         if seleccion == "Buscar reserva existente para agregar las actividades":
             excepcionesReservarActividades1 = [
                 ("Código", lambda seleccion: verificarCodigo(seleccion))]
             
             ventana_usuario.modificarTexto( "".join(textoBase) + "Empecemos ingresando el código de tu reserva, recuerda que es el código que te dieron al realizar tu reserva:")
             ventana_usuario.crearFormulario( tipo_formulario=3, on_accept=lambda seleccion: reservarActividades(ventana_usuario, 2, seleccion),  criterios=["Código"], verificaciones=excepcionesReservarActividades1)
+        
         elif seleccion == "Realizar una nueva reserva":
-            print("Realizando nueva reserva")
-            ventana_usuario.reserva = realizarReserva(ventana_usuario=ventana_usuario, opcion=0, seleccion=None, textobase=textoBase[0])
-            reservarActividades(ventana_usuario, 2)
+            reserva = realizarReserva(ventana_usuario=ventana_usuario, opcion=0, seleccion=None, textobase=textoBase[0])
+            reservarActividades(ventana_usuario, 2, seleccion)
+            return reserva
+            
 
     if opcion == 2: # Paso 2: Elegir plan de actividades y terminar procesos
-        if seleccion:
-            ventana_usuario.reserva = Reserva.buscar_reserva(int(seleccion["Código"]))
+        if seleccion and "Código" in seleccion:
+            reserva = Reserva.buscar_reserva(int(seleccion["Código"]))
+        else:
+            reserva = reserva_global
         
         elegirPlanTuristico(ventana_usuario)
         ventana_usuario.borrarResultados("___________ Resumen de la reserva realizada___________")
         ventana_usuario.modificarTexto( textoBase[0] + "\n🎉🎉Terminaste de realizar tu reserva🎉🎉\n\nAquí podrás ver el resumen de lo que elegiste. Esperamos haber sido de utilidad 😊"  )
-        ventana_usuario.frameResumen(lista=ventana_usuario.reserva.toString(), metodoSalida=lambda: reservarActividades(ventana_usuario))
-
+        ventana_usuario.frameResumen(lista=reserva_global.toString(), metodoSalida=lambda: reservarActividades(ventana_usuario))
 
 def realizarReserva(ventana_usuario, opcion=0, seleccion=None, textobase=None):
     """
@@ -66,7 +69,9 @@ def realizarReserva(ventana_usuario, opcion=0, seleccion=None, textobase=None):
     :param opcion (int, optional): Indica el paso del proceso de creación de la reserva. Default es 0.
     :param seleccion (dict, optional): Datos seleccionados por el usuario en cada paso.
     :param textobase (str, optional): Mensaje base para mostrar en la interfaz.
+    :return: Objeto reserva creado.
     """
+    
     ventana_usuario.borrarFrame(ventana_usuario.procesosYConsultas_frame)
     ventana_usuario.texto_base = textobase if textobase is not None else "Actualmente se encuentra creando una nueva reserva.\n"
     
@@ -79,7 +84,7 @@ def realizarReserva(ventana_usuario, opcion=0, seleccion=None, textobase=None):
         ventana_usuario.crearFormulario( tipo_formulario=3, on_accept=lambda seleccion: realizarReserva(ventana_usuario, 1, seleccion), criterios=["Cantidad de días", "Fecha de inicio"],  verificaciones=excepcionesReservarActividades0)
 
     if opcion == 1: #Paso 1: Ingreso de información del titular de la reserva.
-        ventana_usuario.fecha = seleccion
+        fecha = seleccion
         ventana_usuario.fechas = Reserva.mostrarDias(seleccion["Cantidad de días"], seleccion["Fecha de inicio"])
         ventana_usuario.tituloResultados()
         ventana_usuario.frameResultados(criterios=["Cantidad de días", "Fecha de inicio"], valores=[seleccion["Cantidad de días"], seleccion["Fecha de inicio"]] )
@@ -90,13 +95,16 @@ def realizarReserva(ventana_usuario, opcion=0, seleccion=None, textobase=None):
         
         ventana_usuario.modificarTexto( "".join(ventana_usuario.texto_base) +  "Ahora ingrese la información de la persona que va a ser el titular de la reserva:")
         ventana_usuario.crearFormulario(tipo_formulario=3, on_accept=lambda seleccion: realizarReserva(ventana_usuario, 2, seleccion), criterios=["Nombre", "Edad"], verificaciones=excepcionesReservarActividades1)
-
-    if opcion == 2: #Paso 2: Verificación de suscripción y creación del titular.
-        ventana_usuario.titular = Suscripcion.verificar_suscripcion(seleccion["Nombre"], seleccion["Edad"], ventana_usuario.fechas)
-        ventana_usuario.añadirResultado(criterio=["Nombre del titular", "Edad del titular"], valor=[seleccion["Nombre"], seleccion["Edad"]])
+        #return fechas #Posible fallo, estar pendiende de esto
         
-        if ventana_usuario.titular is None:
-            ventana_usuario.titular = Cliente(nombre=seleccion["Nombre"], edad=seleccion["Edad"])
+    if opcion == 2: #Paso 2: Verificación de suscripción y creación del titular.
+        titular = Suscripcion.verificar_suscripcion(nombre=seleccion["Nombre"], edad=seleccion["Edad"], lista_fechas=ventana_usuario.fechas)
+        
+        ventana_usuario.añadirResultado(criterio="Nombre del titular", valor=seleccion["Nombre"])
+        ventana_usuario.añadirResultado(criterio="Edad del titular", valor=seleccion["Edad"])
+        
+        if titular is None:
+            titular = Cliente(nombre=seleccion["Nombre"], edad=seleccion["Edad"])
             ventana_usuario.modificarTexto( "".join(ventana_usuario.texto_base) +  "Actualmente no cuenta con una suscripción con nosotros, elija cómo quiere proceder con su reserva:" )
             
             ventana_usuario.crearFormulario( tipo_formulario=0, on_accept=lambda seleccion: realizarReserva(ventana_usuario, 3, seleccion), tituloValores="¿Desea comprar una suscripción para recibir descuentos impresionantes para su reserva?",  valores=["Sí, quiero comprar", "No, gracias"])
@@ -104,27 +112,25 @@ def realizarReserva(ventana_usuario, opcion=0, seleccion=None, textobase=None):
             realizarReserva(ventana_usuario, 3)
 
     if opcion == 3: #Paso 3: Elección de suscripción o confirmación sin suscripción.
-        ventana_usuario.suscripcion  = None
         
-        if seleccion:
-            ventana_usuario.suscripcion  = comprarSuscripcion(ventana_usuario, seleccion=seleccion)
-            ventana_usuario.titular.setSuscripcion(ventana_usuario.suscripcion)
+        if seleccion: #Caso en el que el cliente no tiene una suscripción, ya sea que la compre o no
+            suscripcion  = comprarSuscripcion(ventana_usuario, seleccion=seleccion)
+            suscripcion_global = suscripcion
+            titular_global.setSuscripcion(suscripcion)
 
         else: #Caso en el que el cliente ya tiene una suscripción
-            ventana_usuario.suscripcion = ventana_usuario.titular.getSuscripcion()
+            suscripcion = titular_global.getSuscripcion()
+            suscripcion_global = suscripcion
             
-        
-        ventana_usuario.frameResultados(criterios=["Suscripción:"], valores=[ventana_usuario.titular.getSuscripcion().get_tipo() if ventana_usuario.titular.getSuscripcion() is not None else "No se aplicará una suscripción a la reserva"])
-        
+            
+        ventana_usuario.borrarResultados("")
+        ventana_usuario.tituloResultados()
+        ventana_usuario.frameResultados(criterios=["Suscripción"], valores=[titular_global.getSuscripcion().get_tipo() if titular_global.getSuscripcion() is not None else "No hay suscripción"])
         excepcionesReservarActividades2 = [
             ("Cantidad de clientes", lambda seleccion: verificarNumero(seleccion))]
         
-        
-
-
-
     if opcion == 4: #Paso 4: Ingreso de cantidad de clientes.
-        ventana_usuario.reserva = Reserva()
+        reserva = Reserva()
         ventana_usuario.modificarTexto( "".join(ventana_usuario.texto_base) +  "Ingrese la cantidad de clientes que van a reservar, sin contar al titular:")
         ventana_usuario.crearFormulario( tipo_formulario=3, on_accept=lambda seleccion: realizarReserva(ventana_usuario, 4, seleccion), criterios=["Cantidad de clientes"], verificaciones=excepcionesReservarActividades2 )
         ventana_usuario.cantidadClientes = int(seleccion)
@@ -146,8 +152,8 @@ def realizarReserva(ventana_usuario, opcion=0, seleccion=None, textobase=None):
     if opcion == 6: #Paso 6: Finalización del proceso de reserva, asignación de clasificación y suscripción.
         if seleccion == "None":
             ventana_usuario.frameResultados(criterios=["Clientes:"], valores=ventana_usuario.clientes)
-            ventana_usuario.reserva = asignarClasificacion(ventana_usuario.reserva)
-            ventana_usuario.reserva = aplicarSuscripcion(ventana_usuario.reserva)
+            reserva = asignarClasificacion(ventana_usuario.reserva)
+            reserva = aplicarSuscripcion(ventana_usuario.reserva)
         else:
             excepcionesReservarActividades3 = [
                 ("Nombre", lambda seleccion: verificarNombre(seleccion)),
@@ -156,7 +162,7 @@ def realizarReserva(ventana_usuario, opcion=0, seleccion=None, textobase=None):
             ventana_usuario.modificarTexto("".join(ventana_usuario.texto_base) +  "Ahora ingrese la información del cliente " + str(ventana_usuario.contador) + ":")
             ventana_usuario.crearFormulario( tipo_formulario=3, on_accept=lambda seleccion: realizarReserva(ventana_usuario, 5, seleccion), criterios=["Nombre", "Edad"], verificaciones=excepcionesReservarActividades3)
 
-    return ventana_usuario.reserva
+    return reserva
 
 
 def comprarSuscripcion(ventana_usuario, opcion=0, seleccion=None):
@@ -168,6 +174,7 @@ def comprarSuscripcion(ventana_usuario, opcion=0, seleccion=None):
     :param seleccion (str, optional): Elección del tipo de suscripción.
     :return: Objeto nuevaSuscripcion.
     """
+    
     suscripcionesDisponibles = Suscripcion.get_lista_tipos()
     nuevaSuscripcion1 = None  # Initialize the variable
 
@@ -176,7 +183,7 @@ def comprarSuscripcion(ventana_usuario, opcion=0, seleccion=None):
             return None
         else:
             ventana_usuario.modificarTexto("".join(ventana_usuario.texto_base) + "Genial, puedes escoger entre estas opciones de suscripciones:")
-            ventana_usuario.crearFormulario(tipo_formulario=0, on_accept=lambda seleccion: comprarSuscripcion(ventana_usuario, 1, seleccion), tituloValores="¿Desea comprar una suscripción para recibir descuentos impresionantes para su reserva?", valores=suscripcionesDisponibles)
+            ventana_usuario.crearFormulario(tipo_formulario=0, on_accept=lambda seleccion: comprarSuscripcion(ventana_usuario, 1, seleccion), tituloValores="¿Qué tipo de suscripción desea comprar?", valores=suscripcionesDisponibles)
 
     elif opcion == 1:  # Crear objeto suscripcion
         if seleccion == "Básica":
@@ -197,8 +204,18 @@ def comprarSuscripcion(ventana_usuario, opcion=0, seleccion=None):
 
     return nuevaSuscripcion1
         
-
-
+def reservaExistente(ventana_usuario, textoBase):
+    
+    excepcionesReservarActividades1 = [
+                ("Código", lambda seleccion: verificarCodigo(seleccion))]
+            
+    ventana_usuario.modificarTexto( "".join(textoBase) + "Empecemos ingresando el código de tu reserva, recuerda que es el código que te dieron al realizar tu reserva:")
+    ventana_usuario.crearFormulario( tipo_formulario=3, on_accept=lambda seleccion: reservarActividades(ventana_usuario, 2, seleccion),  criterios=["Código"], verificaciones=excepcionesReservarActividades1)
+    
+def crearYAsignarReserva(ventana_usuario, textoBase):
+    global reserva_global
+    reserva_global = realizarReserva(ventana_usuario=ventana_usuario, opcion=0, seleccion=None, textobase=textoBase[0])
+    reservarActividades(ventana_usuario, 2, None)
 
 def elegirPlanTuristico(ventana_usuario, opcion=0, seleccion=None):
     """
