@@ -3,8 +3,8 @@ class Reserva:
     _ultimo_codigo = 0
     _reservas_existentes = []
 
-    def __init__(self, cliente=None, fechas=None, idioma=None, destino=None,destinoNombre=None, clasificacion=0, tipo_plan='', existe_suscripcion=False, plan=None, its_planeacion=True):
-        self._codigo = self._incrementar_codigo()
+    def __init__(self, cliente=None, fechas=None,hotel=None, codigo=None,cantidad_clientes=0,precio=0.0, idioma=None,paquete_turistico=None, destino=None,destinoNombre=None, clasificacion=0, tipo_plan='', existe_suscripcion=False, plan=None, its_planeacion=True):
+        self._codigo = codigo if codigo is not None else  self._incrementar_codigo()
         self._clientes = [cliente] if cliente else []
         self._idiomas = [idioma] if idioma else []
         self._fechas = fechas if fechas else []
@@ -13,10 +13,13 @@ class Reserva:
         self._destinoNombre=destinoNombre
         self._existe_suscripcion = existe_suscripcion
         self._plan = plan
-        self._paquete_turistico=None
+        self._paquete_turistico=paquete_turistico
         self._its_planeacion = its_planeacion
         self._descuento_por_cancelacion = ''
         self._descuento = 0
+        self._hotel=hotel
+        self._precio=precio
+        self._cantidad_clientes=cantidad_clientes
         Reserva._reservas_existentes.append(self)
 
     def toString(self):
@@ -101,7 +104,7 @@ class Reserva:
     def mostrarDias(cantidad_dias, fecha_inicio_str):
         from datetime import datetime, timedelta
         fecha_inicio = datetime.strptime(fecha_inicio_str, "%d/%m/%Y")
-        lista_fechas = [(fecha_inicio + timedelta(days=i)).strftime("%d/%m/%Y") for i in range(int(cantidad_dias))]
+        lista_fechas = [(fecha_inicio + timedelta(days=i)).strftime("%d/%m/%Y") for i in range(cantidad_dias)]
         return lista_fechas
     
     @staticmethod
