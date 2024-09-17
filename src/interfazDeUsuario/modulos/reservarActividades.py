@@ -11,9 +11,12 @@ from gestorAplicacion.reserva import Reserva
 from gestorAplicacion.cliente import Cliente
 from gestorAplicacion.suscripcion import Suscripcion
 from gestorAplicacion.grupo import Grupo
+from colorama import Fore, Style
 
 
-def reservarActividades(ventana_usuario, opcion=0, seleccion=None):
+
+
+def reservarActividades(ventana_usuario, opcion=0, seleccion=None, titular = None):
     """
     Gestiona el proceso de reserva de actividades turísticas.
     
@@ -61,7 +64,7 @@ def reservarActividades(ventana_usuario, opcion=0, seleccion=None):
         ventana_usuario.modificarTexto( textoBase[0] + "\n🎉🎉Terminaste de realizar tu reserva🎉🎉\n\nAquí podrás ver el resumen de lo que elegiste. Esperamos haber sido de utilidad 😊"  )
         ventana_usuario.frameResumen(lista=reserva_global.toString(), metodoSalida=lambda: reservarActividades(ventana_usuario))
 
-def realizarReserva(ventana_usuario, opcion=0, seleccion=None, textobase=None):
+def realizarReserva(ventana_usuario, opcion=0, seleccion=None, textobase=None, titular = None):
     """
     Crea una nueva reserva de actividades turísticas.
 
@@ -71,10 +74,10 @@ def realizarReserva(ventana_usuario, opcion=0, seleccion=None, textobase=None):
     :param textobase (str, optional): Mensaje base para mostrar en la interfaz.
     :return: Objeto reserva creado.
     """
-    titular= None
     ventana_usuario.borrarFrame(ventana_usuario.procesosYConsultas_frame)
     ventana_usuario.texto_base = textobase if textobase is not None else "Actualmente se encuentra creando una nueva reserva.\n"
-    
+
+
     if opcion == 0: # Paso 0: Ingreso de detalles iniciales de la reserva
         excepcionesReservarActividades0 = [
             ("Cantidad de días", lambda seleccion: verificarNumero(seleccion)),
@@ -98,21 +101,23 @@ def realizarReserva(ventana_usuario, opcion=0, seleccion=None, textobase=None):
         #return fechas #Posible fallo, estar pendiende de esto
         
     if opcion == 2: #Paso 2: Verificación de suscripción y creación del titular.
-        titular = Suscripcion.verificar_suscripcion(nombre=seleccion["Nombre"], edad=seleccion["Edad"], lista_fechas=ventana_usuario.fechas)
-        #ventana_usuario.titular = titular #Se guarda el titular en la ventana para poder acceder a él en otros métodos
         
+        ventana_usuario.titular = Cliente(Suscripcion.verificar_suscripcion(nombre=seleccion["Nombre"], edad=seleccion["Edad"], lista_fechas=ventana_usuario.fechas))
+        
+        #ventana_usuario.titular = titular #Se guarda el titular en la ventana para poder acceder a él en otros métodos
         ventana_usuario.añadirResultado(criterio="Nombre del titular", valor=seleccion["Nombre"])
         ventana_usuario.añadirResultado(criterio="Edad del titular", valor=seleccion["Edad"])
         
-        if titular is None:
-            titular = Cliente(nombre=seleccion["Nombre"], edad=seleccion["Edad"])
+        if ventana_usuario.titular._suscripcion is None:
+            ventana_usuario.titular = Cliente(nombre=seleccion["Nombre"], edad=seleccion["Edad"])
             ventana_usuario.modificarTexto( "".join(ventana_usuario.texto_base) +  "Actualmente no cuenta con una suscripción con nosotros, elija cómo quiere proceder con su reserva:" )
             
             ventana_usuario.crearFormulario( tipo_formulario=0, on_accept=lambda seleccion: realizarReserva(ventana_usuario, 3, seleccion), tituloValores="¿Desea comprar una suscripción para recibir descuentos impresionantes para su reserva?",  valores=["Sí, quiero comprar", "No, gracias"])
-            return titular
+            return ventana_usuario.titular
         else:
             realizarReserva(ventana_usuario, 3)
-            return titular
+
+            return ventana_usuario.titular
 
         #El titular no se crea correctamente, se debe corregir, así que la suscripción no se asigna correctamente
 
@@ -120,12 +125,12 @@ def realizarReserva(ventana_usuario, opcion=0, seleccion=None, textobase=None):
         
         if seleccion: #Caso en el que el cliente no tiene una suscripción, ya sea que la compre o no
             suscripcion  = comprarSuscripcion(ventana_usuario, seleccion=seleccion, titular= titular)
-            titular.setSuscripcion(suscripcion)
+            ventana_usuario.titular.setSuscripcion(suscripcion)
     
         ventana_usuario.borrarResultados("")
         ventana_usuario.tituloResultados()
-        ventana_usuario.frameResultados(criterios=["Suscripción"], valores=[titular.getSuscripcion().get_tipo() if titular.getSuscripcion() is not None else "No hay suscripción"])
-        realizarReserva(ventana_usuario, 3)
+        ventana_usuario.frameResultados(criterios=["Suscripción"], valores=[ventana_usuario.titular.getSuscripcion().get_tipo() if ventana_usuario.titular.getSuscripcion() is not None else "No hay suscripción"])
+        realizarReserva(ventana_usuario, 4)
         
         
     if opcion == 4: #Paso 4: Ingreso de cantidad de clientes.
@@ -134,21 +139,34 @@ def realizarReserva(ventana_usuario, opcion=0, seleccion=None, textobase=None):
         reserva = Reserva()
         ventana_usuario.modificarTexto( "".join(ventana_usuario.texto_base) +  "Ingrese la cantidad de clientes que van a reservar, sin contar al titular:")
         ventana_usuario.crearFormulario( tipo_formulario=3, on_accept=lambda seleccion: realizarReserva(ventana_usuario, 4, seleccion), criterios=["Cantidad de clientes"], verificaciones=excepcionesReservarActividades2 )
-        ventana_usuario.cantidadClientes = int(seleccion)
-        realizarReserva(ventana_usuario, 5)
+        
+        if seleccion is not None:
+            ventana_usuario.cantidadClientes = seleccion['Cantidad de clientes']
+            seleccion = None
+            realizarReserva(ventana_usuario, 5)
+        else:
+            print("Error: La selección es None")
+
+
 
     if opcion == 5: #Paso 5: Registro de clientes adicionales.
+        seleccion = None if seleccion == "None" else seleccion
         if seleccion is None:
             ventana_usuario.contador = 0
             ventana_usuario.clientes = []
         else:
             ventana_usuario.contador += 1
-            cliente = ingresarCliente(seleccion)
-            ventana_usuario.reserva.append(cliente)
+            cliente = Cliente(Suscripcion.verificar_suscripcion(nombre=seleccion["Nombre"], edad=seleccion["Edad"], lista_fechas=ventana_usuario.fechas))
+            
+            ventana_usuario.reserva._clientes.append(cliente)
             ventana_usuario.clientes.append(cliente)
         
-        seleccionx = "None" if ventana_usuario.contador == ventana_usuario.cantidadClientes else None
-        realizarReserva(ventana_usuario, 6, seleccionx)
+        if (ventana_usuario.contador == ventana_usuario.cantidadClientes):
+            
+            realizarReserva(ventana_usuario, 6)
+
+        else:
+            None
 
     if opcion == 6: #Paso 6: Finalización del proceso de reserva, asignación de clasificación y suscripción.
         if seleccion == "None":
@@ -162,8 +180,9 @@ def realizarReserva(ventana_usuario, opcion=0, seleccion=None, textobase=None):
             
             ventana_usuario.modificarTexto("".join(ventana_usuario.texto_base) +  "Ahora ingrese la información del cliente " + str(ventana_usuario.contador) + ":")
             ventana_usuario.crearFormulario( tipo_formulario=3, on_accept=lambda seleccion: realizarReserva(ventana_usuario, 5, seleccion), criterios=["Nombre", "Edad"], verificaciones=excepcionesReservarActividades3)
+            
 
-    return reserva
+    return ventana_usuario.reserva
 
 
 def comprarSuscripcion(ventana_usuario, opcion=0, seleccion=None, titular=None):
