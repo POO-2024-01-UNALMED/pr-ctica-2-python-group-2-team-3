@@ -8,17 +8,17 @@ from PIL import Image, ImageTk
 import sys
 import os
 
-"""# Ajustar las rutas para las importaciones
+# Ajustar las rutas para las importaciones
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '.')))
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), 'clases')))
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), 'modulos')))
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), 'gestorAplicacion')))
 
-"""
+
 
 #importar la ventana principal
-from ventanaPrincipalDeUsuario import VentanaPrincipalDeUsuario
+from src.interfazDeUsuario.ventanaPrincipalDeUsuario import VentanaPrincipalDeUsuario
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '.')))
