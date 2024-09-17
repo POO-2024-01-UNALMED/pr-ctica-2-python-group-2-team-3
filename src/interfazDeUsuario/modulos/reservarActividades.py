@@ -114,6 +114,8 @@ def realizarReserva(ventana_usuario, opcion=0, seleccion=None, textobase=None):
             realizarReserva(ventana_usuario, 3)
             return titular
 
+        #El titular no se crea correctamente, se debe corregir, así que la suscripción no se asigna correctamente
+
     if opcion == 3: #Paso 3: Elección de suscripción o confirmación sin suscripción.
         
         if seleccion: #Caso en el que el cliente no tiene una suscripción, ya sea que la compre o no
