@@ -9,7 +9,7 @@ import sys
 import os
 
 # Ajustar las rutas para las importaciones
-
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '.')))
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), 'clases')))
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), 'modulos')))
@@ -20,8 +20,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), 'gestorA
 #importar la ventana principal
 from ventanaPrincipalDeUsuario import VentanaPrincipalDeUsuario
 
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-
+#Ruta actual
 directorio_actual = os.path.dirname(os.path.abspath(__file__))
 
 class VentanaInicio(tk.Tk):

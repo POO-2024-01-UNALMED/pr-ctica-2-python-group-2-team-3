@@ -35,6 +35,7 @@ def reservarActividades(ventana_usuario, opcion=0, seleccion=None):
         ventana_usuario.crearFormulario( tipo_formulario=0, on_accept=lambda seleccion: reservarActividades(ventana_usuario, 1, seleccion), tituloValores="¿Qué desea hacer?",valores=opcionesReservarActividades)
 
     if opcion == 1:# Paso 1: Buscar o crear la reserva
+        ventana_usuario.reserva = None
         if seleccion == "Buscar reserva existente para agregar las actividades":
             excepcionesReservarActividades1 = [
                 ("Código", lambda seleccion: verificarCodigo(seleccion))]
@@ -102,13 +103,14 @@ def realizarReserva(ventana_usuario, opcion=0, seleccion=None, textobase=None):
             realizarReserva(ventana_usuario, 3)
 
     if opcion == 3: #Paso 3: Elección de suscripción o confirmación sin suscripción.
+        ventana_usuario.suscripcion  = None
         
         if seleccion:
             ventana_usuario.suscripcion  = comprarSuscripcion(ventana_usuario, seleccion=seleccion)
             ventana_usuario.titular.setSuscripcion(ventana_usuario.suscripcion)
 
         else: #Caso en el que el cliente ya tiene una suscripción
-            ventana_usuario.titular.setSuscripcion = ventana_usuario.titular.getSuscripcion()
+            ventana_usuario.suscripcion = ventana_usuario.titular.getSuscripcion()
             
         
         ventana_usuario.frameResultados(criterios=["Suscripción:"], valores=[ventana_usuario.titular.getSuscripcion().get_tipo() if ventana_usuario.titular.getSuscripcion() is not None else "No se aplicará una suscripción a la reserva"])
