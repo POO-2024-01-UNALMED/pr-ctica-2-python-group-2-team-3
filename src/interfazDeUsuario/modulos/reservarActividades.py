@@ -11,7 +11,6 @@ from gestorAplicacion.reserva import Reserva
 from gestorAplicacion.cliente import Cliente
 from gestorAplicacion.suscripcion import Suscripcion
 from gestorAplicacion.grupo import Grupo
-from colorama import Fore, Style
 
 
 

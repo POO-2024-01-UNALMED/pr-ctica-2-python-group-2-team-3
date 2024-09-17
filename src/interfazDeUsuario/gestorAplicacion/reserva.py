@@ -101,7 +101,7 @@ class Reserva:
     def mostrarDias(cantidad_dias, fecha_inicio_str):
         from datetime import datetime, timedelta
         fecha_inicio = datetime.strptime(fecha_inicio_str, "%d/%m/%Y")
-        lista_fechas = [(fecha_inicio + timedelta(days=i)).strftime("%d/%m/%Y") for i in range(cantidad_dias)]
+        lista_fechas = [(fecha_inicio + timedelta(days=i)).strftime("%d/%m/%Y") for i in range(int(cantidad_dias))]
         return lista_fechas
     
     @staticmethod
